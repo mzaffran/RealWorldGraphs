@@ -8,22 +8,25 @@ int main(int argc,char** argv){
 
 	printf("Reading edgelist from file %s\n",argv[1]);
 	g=readedgelist(argv[1]);
+	printf("Number of edges: %lu\n",g->e);
     
+    //clean(g);
     
-    clean(g);
     //mergeSort(g->edges,0, g->e-1);
-    edge *B =malloc (g->e*sizeof(edge));
-    
-    BottomUpMergeSort(g->edges,B, g->e);
-    duplicates(g);
-    
+    //edge *B =malloc (g->e*sizeof(edge));
+    printf("Start sorting");
+    //BottomUpMergeSort(g->edges, B, g->e);
+    //free(B);
+    printf("Finished sorting\n");
+    //duplicates(g);
+   
     
 	printf("Number of nodes: %lu\n",g->n);
 	printf("Number of edges: %lu\n",g->e);
     
 	printf("Building the adjacency list\n");
 	mkadjlist(g);
-	
+	printf("finished Building the adjacency list\n");
 	
 
 	t2=time(NULL);

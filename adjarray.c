@@ -26,12 +26,12 @@ Up to 200 million edges on my laptop with 8G of RAM: takes more or less 4G of RA
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>//to estimate the runing time
-
+#include <string.h>
 #include "utility.c"
 
 
 
-#define NLINKS 100000000 //maximum number of edges for memory allocation, will increase if needed
+#define NLINKS 120000000 //maximum number of edges for memory allocation, will increase if needed
 
 
 typedef struct {
@@ -48,9 +48,6 @@ typedef struct {
 } adjlist;
 
 
-adjlist* readedgelist(char* input);
-void mkadjlist(adjlist* g);
-void free_adjlist(adjlist *g);
 
 
 
@@ -58,23 +55,41 @@ void free_adjlist(adjlist *g);
 //reading the edgelist from file
 adjlist* readedgelist(char* input){
 	unsigned long e1=NLINKS;
+
 	FILE *file=fopen(input, "r");
 
 	adjlist *g=malloc(sizeof(adjlist));
 	g->n=0;
 	g->e=0;
-	g->edges=malloc(e1*sizeof(edge));//allocate some RAM to store edges
 	
+	
+
 	char* ch[100];
-    fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s", ch)  ;
+	char nedges [20];
+    fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s %*s %*s %s", nedges, ch)  ;
     
+    char*eptr;
+    e1=strtoul(nedges,&eptr,10);
+    g->edges=malloc(e1*sizeof(edge));//allocate some RAM to store edges
+    
+   	if (g->edges==NULL) printf("Failed allocation of memory to edges\n");
+    else printf("Succesful allocation of memory to edges\n");
+    
+
 	while (fscanf(file,"%lu %lu", &(g->edges[g->e].s), &(g->edges[g->e].t))==2) {
-		g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
-		if (++(g->e)==e1) {//increase allocated RAM if needed
-			e1+=NLINKS;
-			g->edges=realloc(g->edges,e1*sizeof(edge));
+        g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
+		if ((g->e)++==e1) {//increase allocated RAM if needed
+  		     printf("realloc\n");           
+			//e1+= NLINKS;
+			e1+=10000000;
+            g->edges=realloc(g->edges,e1*sizeof(edge));
+ 
+		    if (g->edges ==NULL)
+		       printf("edges became null");
 		}
-	}
+
+    }
+
 	fclose(file);
 
 	g->n++;
@@ -87,11 +102,172 @@ adjlist* readedgelist(char* input){
 //building the adjacency matrix
 void mkadjlist(adjlist* g){
 	unsigned long i,u,v;
+
+	unsigned long *d=calloc(g->n,sizeof(unsigned long));
+    if (d==NULL)
+    printf("d null");
+	for (i=0;i<g->e;i++) {
+		d[g->edges[i].s]++;
+		d[g->edges[i].t]++;
+	}
+
+	g->cd=malloc((g->n+1)*sizeof(unsigned long));
+	 if (g->cd==NULL)
+    printf("cd null");
+	g->cd[0]=0;
+	for (i=1;i<g->n+1;i++) {
+		g->cd[i]=g->cd[i-1]+d[i-1];
+		d[i-1]=0;
+	}
+
+	g->adj=malloc(2*g->e*sizeof(unsigned long));
+if (g->adj==NULL)
+    printf("adj null");
+	for (i=0;i<g->e;i++) {
+		u=g->edges[i].s;
+		v=g->edges[i].t;
+		g->adj[ g->cd[u] + d[u]++ ]=v;
+		g->adj[ g->cd[v] + d[v]++ ]=u;
+	}
+
+	free(d);
+	//free(g->edges);
+}
+
+
+
+
+void BottomUpMerge2(unsigned long A[], unsigned long oldindices[], unsigned long iLeft, unsigned long iRight, unsigned long iEnd, unsigned long B[],unsigned long oldindices2[])
+{
+    unsigned long i,j,k; 
+    i = iLeft, j = iRight;
+    // While there are elements in the left or right runs...
+    for (k = iLeft; k < iEnd; k++) {
+        // If left run head exists and is <= existing right run head.
+        if (i < iRight && (j >= iEnd || A[i]>A[j]  )) {
+            B[k] = A[i];
+            oldindices2[k]=oldindices[i];
+            i = i + 1;
+        } else {
+            B[k] = A[j];
+            oldindices2[k]=oldindices[j];
+            j = j + 1;    
+        }
+    } 
+}
+
+void CopyArray2(unsigned long B[], unsigned long A[], unsigned long n)
+{
+     unsigned long i;
+    for(i = 0; i < n; i++)
+        A[i] = B[i];
+}
+void BottomUpMergeSort2(unsigned long A[],unsigned long B[], unsigned long n , unsigned long oldindices[],unsigned long oldindices2[])
+{
+     unsigned long width,i;
+    // Each 1-element run in A is already "sorted".
+    // Make successively longer sorted runs of length 2, 4, 8, 16... until whole array is sorted.
+    for (width = 1; width < n; width = 2 * width)
+    {
+        // Array A is full of runs of length width.
+        for (i = 0; i < n; i = i + 2 * width)
+        {
+            // Merge two runs: A[i:i+width-1] and A[i+width:i+2*width-1] to B[]
+            // or copy A[i:n-1] to B[] ( if(i+width >= n) )
+            BottomUpMerge2(A, oldindices, i, min(i+width, n), min(i+2*width, n), B,oldindices2);
+        }
+        // Now work array B is full of runs of length 2*width.
+        // Copy array B to array A for next iteration.
+        // A more efficient implementation would swap the roles of A and B.
+        CopyArray2(B, A, n);
+        CopyArray2(oldindices2,oldindices,n);
+    
+        // Now array A is full of runs of length 2*width.
+    }
+}
+
+//  Left run is A[iLeft :iRight-1].
+// Right run is A[iRight:iEnd-1  ].
+
+
+//rename vertices such that the vertices are in decreasing order of degree and there are no isolated nodes.
+void renamevertices(adjlist* g){
+    
+	unsigned long i,j;
 	unsigned long *d=calloc(g->n,sizeof(unsigned long));
 
 	for (i=0;i<g->e;i++) {
 		d[g->edges[i].s]++;
 		d[g->edges[i].t]++;
+	}
+    
+    unsigned long *oldindices = malloc(g->n*sizeof(unsigned long));
+    unsigned long *oldindices2 = malloc(g->n*sizeof(unsigned long));
+    unsigned long *ordered_d =  malloc(g->n*sizeof(unsigned long));
+
+
+    for (i=0; i< g->n; i++){
+        oldindices[i]=i; 
+        oldindices2[i]=i;   
+    }
+    BottomUpMergeSort2(d, ordered_d, g->n , oldindices, oldindices2);
+    
+    free(ordered_d);
+    free(oldindices2);
+    
+
+    unsigned long isolated_nodes=0;
+    i=g->n-1;
+    
+    while (d[i]==0){
+          
+          isolated_nodes++;      
+          i--;
+          
+    }
+   
+    free(d); 
+    
+
+    
+    
+    unsigned long *newindices = malloc(g->n*sizeof(unsigned long));
+
+
+    for (i=0 ; i<g->n; i++){
+        newindices[oldindices[i]]=i;
+    }
+
+
+    free(oldindices);
+    
+
+    edge *newedges = malloc(g->e*sizeof(edge));
+    for (i=0; i<g->e; i++){
+
+        newedges[i].s=newindices[g->edges[i].s];
+        newedges[i].t=newindices[g->edges[i].t];
+
+    }
+    free(g->edges);
+    g->edges=newedges;
+    //free(newindices);
+
+
+    g->n -= isolated_nodes; 
+
+   
+
+}
+
+
+void mkdirectedadjlist(adjlist* g){
+	unsigned long i,u,v;
+	unsigned long *d=calloc(g->n,sizeof(unsigned long));
+
+	for (i=0;i<g->e;i++) {
+		d[g->edges[i].s]++;
+		
 	}
 
 	g->cd=malloc((g->n+1)*sizeof(unsigned long));
@@ -101,13 +277,13 @@ void mkadjlist(adjlist* g){
 		d[i-1]=0;
 	}
 
-	g->adj=malloc(2*g->e*sizeof(unsigned long));
+	g->adj=malloc(g->e*sizeof(unsigned long));
 
 	for (i=0;i<g->e;i++) {
 		u=g->edges[i].s;
 		v=g->edges[i].t;
 		g->adj[ g->cd[u] + d[u]++ ]=v;
-		g->adj[ g->cd[v] + d[v]++ ]=u;
+		
 	}
 
 	free(d);
@@ -122,81 +298,7 @@ void free_adjlist(adjlist *g){
 	free(g);
 }
 
-// Merges two subarrays of arr[]. 
-// First subarray is arr[l..m] 
-// Second subarray is arr[m+1..r] 
-void merge(edge arr[], unsigned long l, unsigned long m, unsigned long r)
-{
-	unsigned long i, j, k;
-	unsigned long n1 = m - l + 1;
-	unsigned long n2 = r - m;
 
-	/* create temp arrays */
-	edge L[n1], R[n2];
-
-	/* Copy data to temp arrays L[] and R[] */
-	for (i = 0; i < n1; i++)
-	
-		L[i] = arr[l + i];
-	for (j = 0; j < n2; j++)
-		R[j] = arr[m + 1 + j];
-
-	/* Merge the temp arrays back into arr[l..r]*/
-	i = 0; // Initial index of first subarray 
-	j = 0; // Initial index of second subarray 
-	k = l; // Initial index of merged subarray 
-	while (i < n1 && j < n2)
-	{
-		if (L[i].s < R[j].s || (L[i].s==R[j].s && L[i].t < R[j].t) )
-		{
-			arr[k] = L[i];
-			i++;
-		}
-		else
-		{
-			arr[k] = R[j];
-			j++;
-		}
-		k++;
-	}
-
-	/* Copy the remaining elements of L[], if there
-	are any */
-	while (i < n1)
-	{
-		arr[k] = L[i];
-		i++;
-		k++;
-	}
-
-	/* Copy the remaining elements of R[], if there
-	are any */
-	while (j < n2)
-	{
-		arr[k] = R[j];
-		j++;
-		k++;
-	}
-}
-
-/* l is for left index and r is right index of the
-sub-array of arr to be sorted */
-void mergeSort(edge arr[], unsigned long l, unsigned long r)
-{
-     
-	if (l < r)
-	{
-		// Same as (l+r)/2, but avoids overflow for 
-		// large l and h 
-		unsigned long m = l + (r - l) / 2;
-
-		// Sort first and second halves 
-		mergeSort(arr, l, m);
-		mergeSort(arr, m + 1, r);
-
-		merge(arr, l, m, r);
-	}
-}
 
 void BottomUpMerge(edge A[], unsigned long iLeft, unsigned long iRight, unsigned long iEnd, edge B[])
 {
@@ -239,6 +341,7 @@ void BottomUpMergeSort(edge A[],edge B[], unsigned long n)
         // Copy array B to array A for next iteration.
         // A more efficient implementation would swap the roles of A and B.
         CopyArray(B, A, n);
+    
         // Now array A is full of runs of length 2*width.
     }
 }
@@ -247,6 +350,10 @@ void BottomUpMergeSort(edge A[],edge B[], unsigned long n)
 // Right run is A[iRight:iEnd-1  ].
 
 
+
+
+
+//Eliminer les boucles et mettre toutes les arretes sous la forme s->t avec s<t
 void clean(adjlist* g){
      //FILE * fp;
    
@@ -259,57 +366,72 @@ void clean(adjlist* g){
             repetitions++;
          }
      }
-     edge* newedges = malloc((g->e - repetitions)*sizeof(edge));
-     for (i=0 ; i< g->e ; i++){
-         if (g->edges[i].s > g->edges[i].t){
-            
-            newedges[k].s = g->edges[i].t;
-            newedges[k].t = g->edges[i].s;
-            //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );
-            k++;
-              
+     if (repetitions !=0)
+         printf("boucle %lu\n",repetitions);
+         edge* newedges = malloc((g->e - repetitions)*sizeof(edge));
+
+         for (i=0 ; i< g->e ; i++){
+             if (g->edges[i].s > g->edges[i].t){
+                
+                newedges[k].s = g->edges[i].t;
+                newedges[k].t = g->edges[i].s;
+                //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );
+                k++;
+                  
+             }
+             else if (g->edges[i].s < g->edges[i].t){
+                newedges[k].s = g->edges[i].s;
+                newedges[k].t = g->edges[i].t;  
+                //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );            
+                k++;
+             }        
          }
-         else if (g->edges[i].s < g->edges[i].t){
-            newedges[k].s = g->edges[i].s;
-            newedges[k].t = g->edges[i].t;  
-            //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );            
-            k++;
-         }        
-     }
-     //fclose(fp);
-     g->edges= newedges;
-     g->e= g->e - repetitions;
+         //fclose(fp);
+         free(g->edges);
+         g->edges= newedges;
+         g->e= g->e - repetitions;
+     
 }
 
 void duplicates(adjlist* g){
-     FILE * fp;
+     //FILE * fp;
    
-     fp = fopen ("cleanlivejournal.txt","w"); 
+     //fp = fopen ("cleanlivejournal.txt","w"); 
 
      unsigned long repetitions=0,i,k=0;
     
      for (i=0;i< g->e-1; i++){
+         
          if (g->edges[i].s == g->edges[i+1].s && g->edges[i].t == g->edges[i+1].t ){
             repetitions++;
          }
      }
-     edge* newedges = malloc((g->e - repetitions)*sizeof(edge));
-     for (i=0 ; i< g->e-1 ; i++){
-         if (g->edges[i].s != g->edges[i+1].s || g->edges[i].t != g->edges[i+1].t ){
+
+     if (repetitions!=0){
+        edge* newedges =  malloc((g->e - repetitions-1)*sizeof(edge));
+        if (newedges==NULL)
+        printf("null err\n");
+        for (i=0 ; i< g->e-1 ; i++){
+         
+            if (g->edges[i].s != g->edges[i+1].s || g->edges[i].t != g->edges[i+1].t ){
+           
+               newedges[k].s = g->edges[i].s;
+               newedges[k].t = g->edges[i].t;
+               //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );
+               k++;
             
-            newedges[k].s = g->edges[i].s;
-            newedges[k].t = g->edges[i].t;
-            fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );
-            k++;
-              
-         }
-     }
-      newedges[k].s = g->edges[g->e-1].s;
-      newedges[k].t = g->edges[g->e-1].t; 
-      fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );  
+               
+            }
+        }
+     
+        newedges[k].s = g->edges[g->e-1].s;
+        newedges[k].t = g->edges[g->e-1].t; 
+        //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );  
    
      
-     fclose(fp);
-     g->edges= newedges;
-     g->e = g->e - repetitions;
+        //fclose(fp);
+        free(g->edges);
+        g->edges= newedges;
+        g->e = g->e - repetitions;
+     }
 }

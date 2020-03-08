@@ -1,12 +1,11 @@
 #include "adjarray.c"
 
-long int triangles(adjlist* g){
+unsigned long triangles(adjlist* g){
      unsigned long nbtriangles=0;
      unsigned long u,v,w1,w2,ku,kv,i=0;
      for(i=0;i< g->e ;i++){
-         //printf("%lu %",i);
+
          u = g->edges[i].s;
-         //printf("%lu %",i);
          v = g->edges[i].t;
          ku=0; kv=0;
          //printf("%lu %lu %",u ,v);
@@ -42,22 +41,30 @@ int main(int argc,char** argv){
 
 	printf("Reading edgelist from file %s\n",argv[1]);
 	g=readedgelist(argv[1]);
-    
-    
+
     clean(g);
+    renamevertices(g);
+    clean(g);
+        
     //mergeSort(g->edges,0, g->e-1);
     edge *B =malloc (g->e*sizeof(edge));
-    
+    printf("Start sorting\n");
+     
     BottomUpMergeSort(g->edges,B, g->e);
-    duplicates(g);
     
+    free(B);
+    printf("Finished sorting\n");
+
+    duplicates(g);
+  
     
 	printf("Number of nodes: %lu\n",g->n);
 	printf("Number of edges: %lu\n",g->e);
     
 	printf("Building the adjacency list\n");
-	mkadjlist(g);
-	
+	//mkadjlist(g);
+
+	mkdirectedadjlist(g);
 	
 
 	t2=time(NULL);
@@ -65,7 +72,7 @@ int main(int argc,char** argv){
 	printf("- Overall time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60));
  
     
-    
+    printf("Start counting triangles\n");
     unsigned long triang =  triangles(g);
     t3=time(NULL);
     printf("Triangles %lu\n",triang);
