@@ -43,6 +43,7 @@ int main(int argc,char** argv){
 	g=readedgelist(argv[1]);
 
     clean(g);
+    printf("Start renaming vertices\n");
     renamevertices(g);
     clean(g);
         

@@ -70,7 +70,7 @@ adjlist* readedgelist(char* input){
     
     char*eptr;
     e1=strtoul(nedges,&eptr,10);
-    g->edges=malloc(e1*sizeof(edge));//allocate some RAM to store edges
+    g->edges=malloc((e1+1)*sizeof(edge));//allocate some RAM to store edges
     
    	if (g->edges==NULL) printf("Failed allocation of memory to edges\n");
     else printf("Succesful allocation of memory to edges\n");
@@ -195,7 +195,8 @@ void renamevertices(adjlist* g){
     
 	unsigned long i,j;
 	unsigned long *d=calloc(g->n,sizeof(unsigned long));
-
+    if (d==NULL)
+       printf("failed to allocate d\n");
 	for (i=0;i<g->e;i++) {
 		d[g->edges[i].s]++;
 		d[g->edges[i].t]++;
@@ -204,8 +205,12 @@ void renamevertices(adjlist* g){
     unsigned long *oldindices = malloc(g->n*sizeof(unsigned long));
     unsigned long *oldindices2 = malloc(g->n*sizeof(unsigned long));
     unsigned long *ordered_d =  malloc(g->n*sizeof(unsigned long));
-
-
+    if (oldindices==NULL)
+       printf("Failed to allocate old indices\n");
+    if (oldindices2==NULL)
+       printf("Failed to allocate old indices2\n");
+    if (ordered_d==NULL)
+       printf("Failed to allocate old ordered_d\n");
     for (i=0; i< g->n; i++){
         oldindices[i]=i; 
         oldindices2[i]=i;   
@@ -232,7 +237,8 @@ void renamevertices(adjlist* g){
     
     
     unsigned long *newindices = malloc(g->n*sizeof(unsigned long));
-
+    if (newindices==NULL)
+       printf("failed allocateion of new indices\n");
 
     for (i=0 ; i<g->n; i++){
         newindices[oldindices[i]]=i;
@@ -242,15 +248,18 @@ void renamevertices(adjlist* g){
     free(oldindices);
     
 
-    edge *newedges = malloc(g->e*sizeof(edge));
+    //edge *newedges = malloc(g->e*sizeof(edge));
+    //if (newedges==NULL)
+      //printf("Failed to allocate ew edges in rename\n");
     for (i=0; i<g->e; i++){
-
-        newedges[i].s=newindices[g->edges[i].s];
-        newedges[i].t=newindices[g->edges[i].t];
+        g->edges[i].s=newindices[g->edges[i].s];
+        g->edges[i].t=newindices[g->edges[i].t];
+        //newedges[i].s=newindices[g->edges[i].s];
+        //newedges[i].t=newindices[g->edges[i].t];
 
     }
-    free(g->edges);
-    g->edges=newedges;
+    //free(g->edges);
+    //g->edges=newedges;
     //free(newindices);
 
 
@@ -366,10 +375,12 @@ void clean(adjlist* g){
             repetitions++;
          }
      }
-     if (repetitions !=0)
+
+     if (repetitions !=0){
          printf("boucle %lu\n",repetitions);
          edge* newedges = malloc((g->e - repetitions)*sizeof(edge));
-
+         if (newedges == NULL)
+            printf("Failed memory allocation of newedges in function clean.c\n");
          for (i=0 ; i< g->e ; i++){
              if (g->edges[i].s > g->edges[i].t){
                 
@@ -390,7 +401,7 @@ void clean(adjlist* g){
          free(g->edges);
          g->edges= newedges;
          g->e= g->e - repetitions;
-     
+     }
 }
 
 void duplicates(adjlist* g){
