@@ -61,29 +61,29 @@ adjlist* readedgelist(char* input){
 	adjlist *g=malloc(sizeof(adjlist));
 	g->n=0;
 	g->e=0;
-	
-	
 
-	char* ch[100];
+
+
+	char ch[100];
 	char nedges [20];
     fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s %*s %*s %s", nedges, ch)  ;
-    
+
     char*eptr;
     e1=strtoul(nedges,&eptr,10);
     g->edges=malloc((e1+1)*sizeof(edge));//allocate some RAM to store edges
-    
+
    	if (g->edges==NULL) printf("Failed allocation of memory to edges\n");
     else printf("Succesful allocation of memory to edges\n");
-    
+
 
 	while (fscanf(file,"%lu %lu", &(g->edges[g->e].s), &(g->edges[g->e].t))==2) {
         g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
 		if ((g->e)++==e1) {//increase allocated RAM if needed
-  		     printf("realloc\n");           
+  		     printf("realloc\n");
 			//e1+= NLINKS;
 			e1+=10000000;
             g->edges=realloc(g->edges,e1*sizeof(edge));
- 
+
 		    if (g->edges ==NULL)
 		       printf("edges became null");
 		}
@@ -139,7 +139,7 @@ if (g->adj==NULL)
 
 void BottomUpMerge2(unsigned long A[], unsigned long oldindices[], unsigned long iLeft, unsigned long iRight, unsigned long iEnd, unsigned long B[],unsigned long oldindices2[])
 {
-    unsigned long i,j,k; 
+    unsigned long i,j,k;
     i = iLeft, j = iRight;
     // While there are elements in the left or right runs...
     for (k = iLeft; k < iEnd; k++) {
@@ -151,9 +151,9 @@ void BottomUpMerge2(unsigned long A[], unsigned long oldindices[], unsigned long
         } else {
             B[k] = A[j];
             oldindices2[k]=oldindices[j];
-            j = j + 1;    
+            j = j + 1;
         }
-    } 
+    }
 }
 
 void CopyArray2(unsigned long B[], unsigned long A[], unsigned long n)
@@ -181,7 +181,7 @@ void BottomUpMergeSort2(unsigned long A[],unsigned long B[], unsigned long n , u
         // A more efficient implementation would swap the roles of A and B.
         CopyArray2(B, A, n);
         CopyArray2(oldindices2,oldindices,n);
-    
+
         // Now array A is full of runs of length 2*width.
     }
 }
@@ -192,8 +192,8 @@ void BottomUpMergeSort2(unsigned long A[],unsigned long B[], unsigned long n , u
 
 //rename vertices such that the vertices are in decreasing order of degree and there are no isolated nodes.
 void renamevertices(adjlist* g){
-    
-	unsigned long i,j;
+
+	unsigned long i;
 	unsigned long *d=calloc(g->n,sizeof(unsigned long));
     if (d==NULL)
        printf("failed to allocate d\n");
@@ -201,7 +201,7 @@ void renamevertices(adjlist* g){
 		d[g->edges[i].s]++;
 		d[g->edges[i].t]++;
 	}
-    
+
     unsigned long *oldindices = malloc(g->n*sizeof(unsigned long));
     unsigned long *oldindices2 = malloc(g->n*sizeof(unsigned long));
     unsigned long *ordered_d =  malloc(g->n*sizeof(unsigned long));
@@ -212,30 +212,30 @@ void renamevertices(adjlist* g){
     if (ordered_d==NULL)
        printf("Failed to allocate old ordered_d\n");
     for (i=0; i< g->n; i++){
-        oldindices[i]=i; 
-        oldindices2[i]=i;   
+        oldindices[i]=i;
+        oldindices2[i]=i;
     }
     BottomUpMergeSort2(d, ordered_d, g->n , oldindices, oldindices2);
-    
+
     free(ordered_d);
     free(oldindices2);
-    
+
 
     unsigned long isolated_nodes=0;
     i=g->n-1;
-    
-    while (d[i]==0){
-          
-          isolated_nodes++;      
-          i--;
-          
-    }
-   
-    free(d); 
-    
 
-    
-    
+    while (d[i]==0){
+
+          isolated_nodes++;
+          i--;
+
+    }
+
+    free(d);
+
+
+
+
     unsigned long *newindices = malloc(g->n*sizeof(unsigned long));
     if (newindices==NULL)
        printf("failed allocateion of new indices\n");
@@ -246,7 +246,7 @@ void renamevertices(adjlist* g){
 
 
     free(oldindices);
-    
+
 
     //edge *newedges = malloc(g->e*sizeof(edge));
     //if (newedges==NULL)
@@ -263,9 +263,9 @@ void renamevertices(adjlist* g){
     //free(newindices);
 
 
-    g->n -= isolated_nodes; 
+    g->n -= isolated_nodes;
 
-   
+
 
 }
 
@@ -276,7 +276,7 @@ void mkdirectedadjlist(adjlist* g){
 
 	for (i=0;i<g->e;i++) {
 		d[g->edges[i].s]++;
-		
+
 	}
 
 	g->cd=malloc((g->n+1)*sizeof(unsigned long));
@@ -292,7 +292,7 @@ void mkdirectedadjlist(adjlist* g){
 		u=g->edges[i].s;
 		v=g->edges[i].t;
 		g->adj[ g->cd[u] + d[u]++ ]=v;
-		
+
 	}
 
 	free(d);
@@ -311,7 +311,7 @@ void free_adjlist(adjlist *g){
 
 void BottomUpMerge(edge A[], unsigned long iLeft, unsigned long iRight, unsigned long iEnd, edge B[])
 {
-    unsigned long i,j,k; 
+    unsigned long i,j,k;
     i = iLeft, j = iRight;
     // While there are elements in the left or right runs...
     for (k = iLeft; k < iEnd; k++) {
@@ -321,9 +321,9 @@ void BottomUpMerge(edge A[], unsigned long iLeft, unsigned long iRight, unsigned
             i = i + 1;
         } else {
             B[k] = A[j];
-            j = j + 1;    
+            j = j + 1;
         }
-    } 
+    }
 }
 
 void CopyArray(edge B[], edge A[], unsigned long n)
@@ -350,7 +350,7 @@ void BottomUpMergeSort(edge A[],edge B[], unsigned long n)
         // Copy array B to array A for next iteration.
         // A more efficient implementation would swap the roles of A and B.
         CopyArray(B, A, n);
-    
+
         // Now array A is full of runs of length 2*width.
     }
 }
@@ -365,11 +365,11 @@ void BottomUpMergeSort(edge A[],edge B[], unsigned long n)
 //Eliminer les boucles et mettre toutes les arretes sous la forme s->t avec s<t
 void clean(adjlist* g){
      //FILE * fp;
-   
-     //fp = fopen ("cleanamazon.txt","w"); 
+
+     //fp = fopen ("cleanamazon.txt","w");
 
      unsigned long repetitions=0,i,k=0;
-    
+
      for (i=0;i< g->e; i++){
          if (g->edges[i].s == g->edges[i].t){
             repetitions++;
@@ -383,19 +383,19 @@ void clean(adjlist* g){
             printf("Failed memory allocation of newedges in function clean.c\n");
          for (i=0 ; i< g->e ; i++){
              if (g->edges[i].s > g->edges[i].t){
-                
+
                 newedges[k].s = g->edges[i].t;
                 newedges[k].t = g->edges[i].s;
                 //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );
                 k++;
-                  
+
              }
              else if (g->edges[i].s < g->edges[i].t){
                 newedges[k].s = g->edges[i].s;
-                newedges[k].t = g->edges[i].t;  
-                //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );            
+                newedges[k].t = g->edges[i].t;
+                //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );
                 k++;
-             }        
+             }
          }
          //fclose(fp);
          free(g->edges);
@@ -406,13 +406,13 @@ void clean(adjlist* g){
 
 void duplicates(adjlist* g){
      //FILE * fp;
-   
-     //fp = fopen ("cleanlivejournal.txt","w"); 
+
+     //fp = fopen ("cleanlivejournal.txt","w");
 
      unsigned long repetitions=0,i,k=0;
-    
+
      for (i=0;i< g->e-1; i++){
-         
+
          if (g->edges[i].s == g->edges[i+1].s && g->edges[i].t == g->edges[i+1].t ){
             repetitions++;
          }
@@ -423,23 +423,23 @@ void duplicates(adjlist* g){
         if (newedges==NULL)
         printf("null err\n");
         for (i=0 ; i< g->e-1 ; i++){
-         
+
             if (g->edges[i].s != g->edges[i+1].s || g->edges[i].t != g->edges[i+1].t ){
-           
+
                newedges[k].s = g->edges[i].s;
                newedges[k].t = g->edges[i].t;
                //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );
                k++;
-            
-               
+
+
             }
         }
-     
+
         newedges[k].s = g->edges[g->e-1].s;
-        newedges[k].t = g->edges[g->e-1].t; 
-        //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );  
-   
-     
+        newedges[k].t = g->edges[g->e-1].t;
+        //fprintf (fp, "%lu %lu\n",newedges[k].s, newedges[k].t );
+
+
         //fclose(fp);
         free(g->edges);
         g->edges= newedges;
