@@ -94,7 +94,6 @@ int main(int argc,char** argv){
     
 	printf("Number of nodes: %lu\n",g->n);
 	printf("Number of edges: %lu\n",g->e);
-    
 
 
     getPages (g, 5 , pagenames);
