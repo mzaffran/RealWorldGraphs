@@ -3,22 +3,17 @@ Maximilien Danisch
 September 2017
 http://bit.ly/danisch
 maximilien.danisch@gmail.com
-
 Info:
 Feel free to use these lines as you wish. This program loads a graph in main memory as a list of edges.
-
 To compile:
 "gcc edgelist.c -O9 -o edgelist".
-
 To execute:
 "./edgelist edgelist.txt".
 "edgelist.txt" should contain the graph: one edge on each line (two unsigned long (nodes' ID)) separated by a space.
 The prograph loads the graph in main memory and then it terminates.
-
 Note:
 If the graph is directed (and weighted) with selfloops and you want to make it undirected unweighted without selfloops, use the following linux command line.
 awk '{if ($1<$2) print $1" "$2;else if ($2<$1) print $2" "$1}' net.txt | sort -n -k1,2 -u > net2.txt
-
 Performance:
 Up to 500 million edges on my laptop with 8G of RAM:
 Takes more or less 1.6G of RAM and 25 seconds (I have an SSD hardrive) for 100M edges.
@@ -26,7 +21,9 @@ Takes more or less 1.6G of RAM and 25 seconds (I have an SSD hardrive) for 100M 
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include <time.h>//to estimate the runing time
+#include "utility.c"
 
 #define NLINKS 100000000 //maximum number of edges for memory allocation, will increase if needed
 
@@ -42,12 +39,6 @@ typedef struct {
 	edge *edges;//list of edges
 } edgelist;
 
-//compute the maximum of three unsigned long
-inline unsigned long max3(unsigned long a,unsigned long b,unsigned long c){
-	a=(a>b) ? a : b;
-	return (a>c) ? a : c;
-}
-
 //reading the edgelist from file
 edgelist* readedgelist(char* input){
 	unsigned long e1=NLINKS;
@@ -60,7 +51,7 @@ edgelist* readedgelist(char* input){
 	g->n=0;
 	g->e=0;
 	g->edges=malloc(e1*sizeof(edge));//allocate some RAM to store edges
-    
+
 	while (fscanf(file,"%lu %lu", &(g->edges[g->e].s), &(g->edges[g->e].t))==2) {
 		g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
 		if (++(g->e)==e1) {//increase allocated RAM if needed
@@ -73,6 +64,8 @@ edgelist* readedgelist(char* input){
 	g->n++;
 
 	g->edges=realloc(g->edges,g->e*sizeof(edge));
+
+
 
 	return g;
 }
@@ -89,36 +82,35 @@ char** readpagelist(char* input, unsigned long n){
 	FILE *file=fopen(input,"r");
 
 	char ch[100];
-	unsigned long i=0,k=0,j;
+	unsigned long i=0,k=0;
     fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s", ch)  ;
     printf("%s\n",ch);
-	char** g=malloc(n*sizeof(char*));
-	
+	char** h=malloc(n*sizeof(char*));
+
 	//fscanf(file,"%lu %s\n", &i, ch);
 	//printf("ff %s\n", ch);
-  
-    
-    char* word ;
+
+
+    char* word = malloc(100) ;
 
     while(fscanf( file, "%lu", &i)!=EOF){
                   fscanf( file, " %[^\n]", word);
-                  
-                  g[i]=malloc(strlen(word) + 1);
-                  strcpy(g[i],word);
+                  h[i]=malloc(strlen(word) + 1);
+                  strcpy(h[i],word);
                   k++;
-                  
+
                   //if (k<=10){
                   //printf("%lu %s ",i,g[i]);
                   //}
     }
     printf("number of page names found %lu\n",k);
-    
 
-    
+
+
 
 	fclose(file);
-
-	return g;
+	free(word);
+	return h;
 }
 
 
@@ -127,7 +119,7 @@ char** readpagelist(char* input, unsigned long n){
 //	time_t t1,t2;
 //
 //	t1=time(NULL);
-//    
+//
 //	printf("Reading edgelist from file %s\n",argv[1]);
 //	g=readedgelist(argv[1]);
 //
