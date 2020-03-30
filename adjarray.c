@@ -31,7 +31,7 @@ Up to 200 million edges on my laptop with 8G of RAM: takes more or less 4G of RA
 
 
 
-#define NLINKS 120000000 //maximum number of edges for memory allocation, will increase if needed
+#define NLINKS 120000000 // maximum number of edges for memory allocation, will increase if needed
 
 
 typedef struct {
@@ -40,17 +40,12 @@ typedef struct {
 } edge;
 
 typedef struct {
-	unsigned long n;//number of nodes
-	unsigned long e;//number of edges
-	edge *edges;//list of edges
-	unsigned long *cd;//cumulative degree cd[0]=0 length=n+1
-	unsigned long *adj;//concatenated lists of neighbors of all nodes
+	unsigned long n; // number of nodes
+	unsigned long e; // number of edges
+	edge *edges; // list of edges
+	unsigned long *cd; // cumulative degree cd[0]=0 length=n+1
+	unsigned long *adj; // concatenated lists of neighbors of all nodes
 } adjlist;
-
-
-
-
-
 
 //reading the edgelist from file
 adjlist* readedgelist(char* input){
@@ -62,58 +57,48 @@ adjlist* readedgelist(char* input){
 	g->n=0;
 	g->e=0;
 
-
-
 	char ch[100];
 	char nedges [20];
-    fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s %*s %*s %s", nedges, ch)  ;
+  fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s %*s %*s %s", nedges, ch)  ;
 
-    char*eptr;
-    e1=strtoul(nedges,&eptr,10);
-    g->edges=malloc((e1+1)*sizeof(edge));//allocate some RAM to store edges
+  char*eptr;
+  e1=strtoul(nedges,&eptr,10);
+  g->edges=malloc((e1+1)*sizeof(edge));//allocate some RAM to store edges
 
-   	if (g->edges==NULL) printf("Failed allocation of memory to edges\n");
-    else printf("Succesful allocation of memory to edges\n");
-
+ 	if (g->edges==NULL) printf("Failed allocation of memory to edges\n");
+  else printf("Succesful allocation of memory to edges\n");
 
 	while (fscanf(file,"%lu %lu", &(g->edges[g->e].s), &(g->edges[g->e].t))==2) {
         g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
-		if ((g->e)++==e1) {//increase allocated RAM if needed
-  		     printf("realloc\n");
-			//e1+= NLINKS;
-			e1+=10000000;
-            g->edges=realloc(g->edges,e1*sizeof(edge));
-
-		    if (g->edges ==NULL)
-		       printf("edges became null");
-		}
-
-    }
+				if ((g->e)++==e1) {//increase allocated RAM if needed
+		  		    	printf("realloc\n");
+								//e1+= NLINKS;
+								e1+=10000000;
+		            g->edges=realloc(g->edges,e1*sizeof(edge));
+				    		if (g->edges == NULL) printf("edges became null");
+						}
+  }
 
 	fclose(file);
-
 	g->n++;
-
 	g->edges=realloc(g->edges,g->e*sizeof(edge));
-
 	return g;
 }
 
 //building the adjacency matrix
 void mkadjlist(adjlist* g){
-	unsigned long i,u,v;
 
-	unsigned long *d=calloc(g->n,sizeof(unsigned long));
-    if (d==NULL)
-    printf("d null");
+	unsigned long i,u,v;
+	unsigned long *d = calloc(g->n,sizeof(unsigned long));
+  if (d==NULL) printf("d null");
+
 	for (i=0;i<g->e;i++) {
 		d[g->edges[i].s]++;
 		d[g->edges[i].t]++;
 	}
 
 	g->cd=malloc((g->n+1)*sizeof(unsigned long));
-	 if (g->cd==NULL)
-    printf("cd null");
+	if (g->cd==NULL) printf("cd null");
 	g->cd[0]=0;
 	for (i=1;i<g->n+1;i++) {
 		g->cd[i]=g->cd[i-1]+d[i-1];
@@ -121,8 +106,7 @@ void mkadjlist(adjlist* g){
 	}
 
 	g->adj=malloc(2*g->e*sizeof(unsigned long));
-if (g->adj==NULL)
-    printf("adj null");
+	if (g->adj==NULL) printf("adj null");
 	for (i=0;i<g->e;i++) {
 		u=g->edges[i].s;
 		v=g->edges[i].t;
@@ -135,7 +119,7 @@ if (g->adj==NULL)
 }
 
 
-
+// adj[cd[i]] jusqua adj[cd[i+1]-1]
 
 void BottomUpMerge2(unsigned long A[], unsigned long oldindices[], unsigned long iLeft, unsigned long iRight, unsigned long iEnd, unsigned long B[],unsigned long oldindices2[])
 {

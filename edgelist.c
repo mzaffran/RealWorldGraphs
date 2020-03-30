@@ -65,8 +65,6 @@ edgelist* readedgelist(char* input){
 
 	g->edges=realloc(g->edges,g->e*sizeof(edge));
 
-
-
 	return g;
 }
 
