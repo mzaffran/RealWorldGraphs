@@ -62,21 +62,28 @@ adjlist* readedgelist(char* input){
   fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s %*s %*s %s", nedges, ch)  ;
 
   char*eptr;
-  e1=strtoul(nedges,&eptr,10);
-  g->edges=malloc((e1+1)*sizeof(edge));//allocate some RAM to store edges
+  e1 = strtoul(nedges,&eptr,10);
+  g->edges = malloc((e1+1)*sizeof(edge));//allocate some RAM to store edges
 
- 	if (g->edges==NULL) printf("Failed allocation of memory to edges\n");
-  else printf("Succesful allocation of memory to edges\n");
+ 	if (g->edges==NULL)
+	{
+		printf("Failed allocation of memory to edges\n");
+	}
 
-	while (fscanf(file,"%lu %lu", &(g->edges[g->e].s), &(g->edges[g->e].t))==2) {
-        g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
-				if ((g->e)++==e1) {//increase allocated RAM if needed
-		  		    	printf("realloc\n");
-								//e1+= NLINKS;
-								e1+=10000000;
-		            g->edges=realloc(g->edges,e1*sizeof(edge));
-				    		if (g->edges == NULL) printf("edges became null");
-						}
+	while (fscanf(file,"%lu %lu", &(g->edges[g->e].s), &(g->edges[g->e].t))==2)
+	{
+    g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
+		if ((g->e)++==e1)
+		{//increase allocated RAM if needed
+    	printf("realloc\n");
+			//e1+= NLINKS;
+			e1+=10000000;
+      g->edges=realloc(g->edges,e1*sizeof(edge));
+  		if (g->edges == NULL)
+			{
+				printf("edges became null");
+			}
+		}
   }
 
 	fclose(file);
@@ -117,9 +124,6 @@ void mkadjlist(adjlist* g){
 	free(d);
 	//free(g->edges);
 }
-
-
-// adj[cd[i]] jusqua adj[cd[i+1]-1]
 
 void BottomUpMerge2(unsigned long A[], unsigned long oldindices[], unsigned long iLeft, unsigned long iRight, unsigned long iEnd, unsigned long B[],unsigned long oldindices2[])
 {
