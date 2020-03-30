@@ -1,6 +1,5 @@
 #include "adjarray.c"
 
-
 int main(int argc,char** argv){
 
   time_t t1,t2 ;
@@ -23,7 +22,6 @@ int main(int argc,char** argv){
   unsigned long *num = calloc(g->n,sizeof(unsigned long)) ;
   unsigned long *coreness = calloc(g->n,sizeof(unsigned long)) ;
   int *visited = calloc(g->n,sizeof(unsigned long)) ; // visited[node] prendra la valeur 1 une fois que nous aurons visité node
-  int all_visited = 0 ;
   // Instanciation de variables
   unsigned long k ;
   unsigned long dmin ;
@@ -31,7 +29,7 @@ int main(int argc,char** argv){
   unsigned long neighbor ;
   unsigned long l ;
 
-  while (all_visited != g->n){
+  while (j != 0){
     // Recherche du noeud de degré minimum
     dmin = g->e ;
     for (k=0; k<g->n; k++){
@@ -41,7 +39,6 @@ int main(int argc,char** argv){
       }
     }
     // Mise à jour des noeuds visités
-    all_visited++ ;
     visited[node] = 1 ;
     // Calcul de la coreness
     c = (c>d[node])?c:d[node] ;
@@ -66,6 +63,13 @@ int main(int argc,char** argv){
   printf("=== Overall time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60)) ;
 
   printf("=== Core-value: %d\n", c) ;
+
+  // printf("=== Corenesses \n") ;
+
+  //for (k=0; k<g->n; k++)
+  //{
+  //  printf("Node %lu has coreness %lu \n", k, coreness[k]) ;
+  //}
 
   free(d) ;
   free(g) ;
