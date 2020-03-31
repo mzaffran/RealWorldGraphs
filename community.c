@@ -2,16 +2,55 @@
 
 
 void labelPropagation2(adjlist* g);
+void labelPropagation(adjlist* g);
+
+int main(int argc,char** argv){
+
+  time_t t1,t2 ;
+
+  t1=time(NULL);
+
+  adjlist* g;
+  g=readedgelist(argv[1]);
+  mkadjlist(g);
+
+  printf("Number of nodes: %lu\n",g->n);
+  printf("Number of edges: %lu\n",g->e);
+	
+  
+  unsigned long i,k=0;
+  for (i=0;i<g->n;i++){
+      if (g->cd[i+1]-g->cd[i]==0){
+         k++;
+      }	
+  }
+  printf("number of isolated nodes = %lu \n",k)    ;
+
+  labelPropagation(g);
+//labelPropagation2(g);
+  t2=time(NULL);
+
+  printf("=== Overall time label prop = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60)) ;
+
+ 
+
+  free(g) ;
+
+}
+
+
+
+
 void labelPropagation(adjlist* g){
-    unsigned long* labels = malloc(g->n*sizeof(unsigned long));
-    unsigned long* nodelabels = malloc(g->n*sizeof(unsigned long));
-    unsigned long* labelusage = malloc(g->n*sizeof(unsigned long));
-    unsigned long* order = malloc(g->n*sizeof(unsigned long));
-    unsigned long* freq = calloc(g->n,sizeof(unsigned long));
+    unsigned long* labels = malloc(g->n*sizeof(unsigned long)); // list of available labels
+    unsigned long* nodelabels = malloc(g->n*sizeof(unsigned long)); // index to get label of each node from the list of labels
+    unsigned long* labelusage = malloc(g->n*sizeof(unsigned long)); // how many times the label is used
+    unsigned long* order = malloc(g->n*sizeof(unsigned long)); // shuffle order
+    unsigned long* freq = calloc(g->n,sizeof(unsigned long)); // freq of neighbouring labels
     unsigned long i,j,aux,maxfreq, numberlabels,freqlabel,currentfreq, node;
     
     if (labels==NULL || order ==NULL || labelusage == NULL || freq == NULL || nodelabels==NULL){
-       printf("failed memory at first");                 
+       printf("failed memory at labelPropgation2");                 
     }
     numberlabels=g->n;
     for (i=0;i <g->n; i++){
@@ -33,11 +72,14 @@ void labelPropagation(adjlist* g){
             order[i]=order[j];
             order[j]=aux;
             
-            }
-        printf("fin")    ;
+        }
+        //printf("fin")    ;
         //label propagation    
         for (i=0;i<g->n; i++) {
             node= order[i];
+            if (g->cd[node+1]-g->cd[node]==0){
+               continue;
+            }
             //calcul des frequence de chaque label
             for (j=g->cd[node]; j< g->cd[node+1];j++){
                 freq[labels[nodelabels[g->adj[j]]]]++;
@@ -79,7 +121,7 @@ void labelPropagation(adjlist* g){
     free(freq);
     free(order);
     printf("There are %lu labels\n",numberlabels);
-    for (j=0; j<g->n;j++){
+    for (j=0; j<numberlabels;j++){
         if (labelusage[labels[j]]>0)
         printf("Label %lu is used %lu times\n",labels[j],labelusage[labels[j]]);    
     }      
@@ -91,51 +133,6 @@ void labelPropagation(adjlist* g){
     free(labels); 
 }
 
-int main(int argc,char** argv){
-
-  time_t t1,t2 ;
-
-  t1=time(NULL);
-
-  adjlist* g;
-  g=readedgelist(argv[1]);
-  mkadjlist(g);
-
-
-  printf("Number of nodes: %lu\n",g->n);
-  printf("Number of edges: %lu\n",g->e);
-	
-  
-  unsigned long i,k=0;
-  for (i=0;i<g->n;i++){
-      if (g->cd[i+1]-g->cd[i]==0){
-         k++;
-      }	
-  }
-  printf("k= %lu \n",k)    ;
-  //labelPropagation(g);
-labelPropagation2(g);
-  t2=time(NULL);
-
-  printf("=== Overall time label prop = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60)) ;
-
- 
-
-  free(g) ;
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -143,12 +140,12 @@ labelPropagation2(g);
 
 
 void labelPropagation2(adjlist* g){ // version n^2
-    unsigned long* labels = malloc(g->n*sizeof(unsigned long));
-    unsigned long* order = malloc(g->n*sizeof(unsigned long));
-    unsigned long* labelusage = malloc(g->n*sizeof(unsigned long));
-    unsigned long* freq = calloc(g->n,sizeof(unsigned long));
+    unsigned long* labels = malloc(g->n*sizeof(unsigned long)); // label of each node
+    unsigned long* order = malloc(g->n*sizeof(unsigned long)); // shuffle order
+    unsigned long* labelusage = malloc(g->n*sizeof(unsigned long)); // how many times the label is used
+    unsigned long* freq = calloc(g->n,sizeof(unsigned long)); // frequency of neighbouring labels (for a fixed node)
     if (labels==NULL || order ==NULL || labelusage == NULL || freq == NULL){
-       printf("failed memory at first");                 
+       printf("failed memory at labelPropgation2");                 
     }
     unsigned long i,j,aux,maxfreq, freqlabel, node, nblabels;
     
