@@ -29,10 +29,7 @@ Up to 200 million edges on my laptop with 8G of RAM: takes more or less 4G of RA
 #include <string.h>
 #include "utility.c"
 
-
-
 #define NLINKS 120000000 // maximum number of edges for memory allocation, will increase if needed
-
 
 typedef struct {
 	unsigned long s;
@@ -169,7 +166,6 @@ void BottomUpMergeSort2(unsigned long A[],unsigned long B[], unsigned long n , u
         // A more efficient implementation would swap the roles of A and B.
         CopyArray2(B, A, n);
         CopyArray2(oldindices2,oldindices,n);
-
         // Now array A is full of runs of length 2*width.
     }
 }
@@ -381,8 +377,8 @@ void clean(adjlist* g){
          }
          //fclose(fp);
          free(g->edges);
-         g->edges= newedges;
-         g->e= g->e - repetitions;
+         g->edges = newedges;
+         g->e = g->e - repetitions;
      }
 }
 
