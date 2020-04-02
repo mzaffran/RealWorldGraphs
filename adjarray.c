@@ -461,3 +461,49 @@ adjlist* specificreadedgelist(char* input){
 	g->edges=realloc(g->edges,g->e*sizeof(edge));
 	return g;
 }
+
+
+adjlist* LFRreadedgelist(char* input){
+    printf("enter lfr read");     
+	unsigned long e1=NLINKS;
+    double u;
+	FILE *file=fopen(input, "r");
+
+	adjlist *g=malloc(sizeof(adjlist));
+	
+	char ch[100];
+	
+    fscanf(file, "%*s %*s %*s %*s %*s %*s %s", ch)  ;
+    printf("ch= ",ch);
+    g->n=1000;
+	g->e=0;
+
+
+  g->edges = malloc((e1+1)*sizeof(edge));//allocate some RAM to store edges
+
+ 	if (g->edges==NULL)
+	{
+		printf("Failed allocation of memory to edges\n");
+	}
+
+	while (fscanf(file,"%lu %lu %lf", &(g->edges[g->e].s), &(g->edges[g->e].t), &u)==3 )
+	{
+    g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
+		if ((g->e)++==e1)
+		{//increase allocated RAM if needed
+    	printf("realloc\n");
+			//e1+= NLINKS;
+			e1+=10000000;
+      g->edges=realloc(g->edges,e1*sizeof(edge));
+  		if (g->edges == NULL)
+			{
+				printf("edges became null");
+			}
+		}
+  }
+
+	fclose(file);
+	g->n++;
+	g->edges=realloc(g->edges,g->e*sizeof(edge));
+	return g;
+}

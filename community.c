@@ -5,37 +5,38 @@ void labelPropagation2(adjlist* g);
 int main(int argc,char** argv){
 
   time_t t1,t2 ;
-  unsigned long i,k=0;
+  unsigned long i,k;
   t1=time(NULL);
 
   adjlist* g;
-  g=readedgelist(argv[1]);
+  g=LFRreadedgelist(argv[1]);
 
   clean(g);
   
 //  renamevertices(g);  
 //  
-//  FILE *file=fopen("amazon2.txt", "w");
-//  for (i=0;i<g->e;i++){
-//    fprintf(file, "%lu %lu\n",g->edges[i].s, g->edges[i].t);
-//  }
-//  fclose(file);
+  FILE *file=fopen("lfr.txt", "w");
+  for (i=0;i<g->e;i++){
+    fprintf(file, "%lu %lu\n",g->edges[i].s, g->edges[i].t);
+  }
+  fclose(file);
 
-  edge *B = malloc (g->e*sizeof(edge));
-  printf("Start sorting\n");
 
-  BottomUpMergeSort(g->edges,B, g->e);
-
-  free(B);
-  printf("Finished sorting\n");
-  duplicates(g);
+//  edge *B = malloc (g->e*sizeof(edge));
+//  printf("Start sorting\n");
+//
+//  BottomUpMergeSort(g->edges,B, g->e);
+//
+//  free(B);
+//  printf("Finished sorting\n");
+//  duplicates(g);
 
   mkadjlist(g);
 
   printf("Number of nodes: %lu\n",g->n);
   printf("Number of edges: %lu\n",g->e);
 
-  
+  k=0;
   for (i=0;i<g->n;i++){
       if (g->cd[i+1]-g->cd[i]==0){
          k++;
@@ -52,15 +53,16 @@ int main(int argc,char** argv){
   printf("=== Overall time label propagation = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60)) ;
   
   //create labels file
-//  if (argc >= 2){
-//    FILE* file = fopen(argv[2],"w");
-//    for (i=0;i<g->n;i++){
-//      fprintf(file, "%lu %lu\n",i, labels[i]);
-//    }
-//    fclose(file);  
-//  }
+  if (argc >= 2){
+    FILE* file = fopen(argv[2],"w");
+    for (i=0;i<g->n;i++){
+      fprintf(file, "%lu %lu\n",i, labels[i]);
+    }
+    fclose(file);  
+  }
   
-//  free(labels);
+  free(labels);
+
   free(g) ;
 
 }
@@ -139,21 +141,42 @@ unsigned long* labelPropagation(adjlist* g){ // version n^2
     free(order);
     free(freq);
     printf("Number of labels used %lu\n", nblabels);
+
+
+    //free(labelusage);
+    
+    //free(labels);
+    
+    // rename labels from 1 to nblabels
+    i=0;
+    unsigned long* labels2 = malloc(g->n*sizeof(unsigned long));
+    for (j=0; j<g->n;j++){
+      if (labelusage[j]>0){
+        labels2[j]=i;
+        
+        labelusage[i]=labelusage[j];
+        if (j!=i)
+           labelusage[j]=0;
+        
+        i++;
+        }
+    }
+    for (j=0; j<g->n;j++){
+        labels[j]=labels2[labels[j]];
+    }
     for (j=0; j<g->n;j++)
     {
       if (labelusage[j]>0)
         printf("Label %lu is used %lu times\n",j,labelusage[j]);
     }
+    free(labelusage);    
+    free(labels2);
+    
     //for (j=0; j<g->n;j++)
     //{
       //printf("node %lu has label  %lu\n",j,labels[j]);
     //}
     
-
-
-    free(labelusage);
-
-    //free(labels);
     return(labels);
 }
 
