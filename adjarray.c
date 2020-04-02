@@ -421,3 +421,43 @@ void duplicates(adjlist* g){
         g->e = g->e - repetitions;
      }
 }
+
+
+adjlist* specificreadedgelist(char* input){
+	unsigned long e1=NLINKS;
+
+	FILE *file=fopen(input, "r");
+
+	adjlist *g=malloc(sizeof(adjlist));
+	g->n=399;
+	g->e=0;
+
+
+  g->edges = malloc((e1+1)*sizeof(edge));//allocate some RAM to store edges
+
+ 	if (g->edges==NULL)
+	{
+		printf("Failed allocation of memory to edges\n");
+	}
+
+	while (fscanf(file,"%lu %lu", &(g->edges[g->e].s), &(g->edges[g->e].t))==2)
+	{
+    g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
+		if ((g->e)++==e1)
+		{//increase allocated RAM if needed
+    	printf("realloc\n");
+			//e1+= NLINKS;
+			e1+=10000000;
+      g->edges=realloc(g->edges,e1*sizeof(edge));
+  		if (g->edges == NULL)
+			{
+				printf("edges became null");
+			}
+		}
+  }
+
+	fclose(file);
+	g->n++;
+	g->edges=realloc(g->edges,g->e*sizeof(edge));
+	return g;
+}
