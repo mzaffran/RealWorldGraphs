@@ -1,5 +1,7 @@
 #include "adjarray.c"
 
+int kcore(adjlist* g);
+
 int main(int argc,char** argv){
 
   time_t t1,t2 ;
@@ -10,64 +12,7 @@ int main(int argc,char** argv){
   g=readedgelist(argv[1]);
   mkadjlist(g);
 
-  // Création d'une liste contenant les degrés de chaque noeud
-  int i;
-  unsigned long *d = calloc(g->n,sizeof(unsigned long)) ;
-  unsigned long *names = calloc(g->n,sizeof(unsigned long)) ;
-  for (i=0; i<g->n; i++) {
-    d[i] = g->cd[i+1]-g->cd[i];
-    names[i] = i;
-  }
-
-  int j = g->n ;
-  int c = 0 ;
-  unsigned long *num = calloc(g->n,sizeof(unsigned long)) ;
-  unsigned long *coreness = calloc(g->n,sizeof(unsigned long)) ;
-  int *visited = calloc(g->n,sizeof(unsigned long)) ; // visited[node] prendra la valeur 1 une fois que nous aurons visité node
-  // Instanciation de variables
-  unsigned long t ;
-  unsigned long k ;
-  unsigned long dmin ;
-  unsigned long node ;
-  unsigned long neighbor ;
-  unsigned long l ;
-  unsigned long last_visited = g->n+1;
-  unsigned long max_iter ;
-
-  while (j != 0){
-    // Recherche du noeud de degré minimum
-    dmin = g->e ;
-    max_iter = (j==g->n)?(g->n):(j+1) ;
-    for (t=0; t < max_iter ; t++){
-      k = names[t] ;
-      if ( (d[k]<dmin) && (visited[k]!=1)){
-         node = k ;
-         dmin = d[k] ;
-      }
-      if (k >= last_visited){
-        names[t] = names[t+1];
-      }
-    }
-    // Mise à jour des noeuds visités
-    visited[node] = 1 ;
-    // Calcul de la coreness
-    c = (c>d[node])?c:d[node] ;
-    // Mise à jour du degré des arrêtes (équivalent à supprimer les arrêtes du noeud courant)
-    for (l=g->cd[node]; l<g->cd[node+1]; l++){
-      neighbor = g->adj[l] ;
-      if (visited[neighbor]!=1)
-      {
-        d[neighbor] = d[neighbor] - 1 ;
-      }
-    }
-    // Numérotation du noeud courant
-    num[node] = j ;
-    // Enregistrement de la coreness du noeud courant
-    coreness[node] = c ;
-    // Mise à jour de la numérotation
-    j-- ;
-    last_visited = node ;
-  }
+  int c = kcore(g);
 
   t2=time(NULL);
 
@@ -75,10 +20,99 @@ int main(int argc,char** argv){
 
   printf("=== Core-value: %d\n", c) ;
 
-  free(d) ;
-  free(g) ;
+  return c ;
+}
+
+int kcore(adjlist* g){
+  // Création d'une liste contenant les degrés de chaque noeud
+  int i;
+  int max_degree = 0 ;
+  unsigned long *degree = calloc(g->n,sizeof(unsigned long)) ;
+  unsigned long *degree_nb = calloc(g->e,sizeof(unsigned long)) ;
+  for (i=0; i<g->n; i++) {
+    degree[i] = g->cd[i+1]-g->cd[i];
+    degree_nb[degree[i]]++ ;
+    if (degree[i] > max_degree)
+      {
+        max_degree = degree[i] ;
+      }
+  }
+
+  unsigned long *init = calloc(max_degree,sizeof(unsigned long)) ;
+  int j = 0 ;
+  for (j=1; j<=max_degree; j++) {
+    init[j] = init[j-1]+degree_nb[j-1] ;
+  }
+
+  unsigned long *ordered_nodes = calloc(g->n,sizeof(unsigned long)) ;
+  unsigned long *nodes_position = calloc(g->n,sizeof(unsigned long)) ;
+  unsigned long *degree_compteur = calloc(g->e,sizeof(unsigned long)) ;
+
+  int k = 0 ;
+  for (k=0; k<g->n; k++) {
+    ordered_nodes[init[degree[k]]+degree_compteur[degree[k]]] = k ;
+    nodes_position[k] = init[degree[k]]+degree_compteur[degree[k]] ;
+    degree_compteur[degree[k]]++ ;
+  }
+
+  int c = 0 ;
+  unsigned long *num = calloc(g->n,sizeof(unsigned long)) ;
+  unsigned long *coreness = calloc(g->n,sizeof(unsigned long)) ;
+  int *visited = calloc(g->n,sizeof(unsigned long)) ; // visited[node] prendra la valeur 1 une fois que nous aurons visité node
+
+  int l = 0 ;
+  int node_number = g->n ;
+  unsigned long node ;
+  unsigned long neighbor ;
+  unsigned long true_init ;
+  unsigned long swapper ;
+  unsigned long swapper_new_position ;
+  int m ;
+  for (l=0; l<g->n; l++){
+    // Récupération du noeud de degré minimum
+    node = ordered_nodes[l] ;
+    // Numérotation du noeud courant
+    num[node] = node_number ;
+    // Mise à jour des noeuds visités
+    visited[node] = 1 ;
+    // Calcul de la coreness
+    c = (c>degree[node])?c:degree[node] ;
+    // Enregistrement de la coreness du noeud courant
+    coreness[node] = c ;
+    // Mise à jour des différents tableaux
+    degree_compteur[degree[node]]-- ;
+    init[degree[node]]++ ;
+    // Mise à jour du degré des arrêtes (équivalent à supprimer les arrêtes du noeud courant)
+    for (m=g->cd[node]; m<g->cd[node+1]; m++){
+      neighbor = g->adj[m] ;
+      if (visited[neighbor]!=1)
+      {
+        true_init = (init[degree[neighbor]])<(l+1)?(l+1):init[degree[neighbor]] ;
+        swapper = ordered_nodes[true_init] ;
+        swapper_new_position = nodes_position[neighbor] ;
+        ordered_nodes[true_init] = neighbor ;
+        nodes_position[neighbor] = true_init ;
+        ordered_nodes[swapper_new_position] = swapper ;
+        nodes_position[swapper] = swapper_new_position ;
+        degree_compteur[degree[neighbor]]-- ;
+        init[degree[neighbor]]++ ;
+        degree[neighbor] = degree[neighbor] - 1 ;
+        degree_compteur[degree[neighbor]]++ ;
+      }
+    }
+    // Mise à jour de la numérotation
+    node_number-- ;
+  }
+
+  free(degree) ;
+  free(ordered_nodes) ;
+  free(init) ;
+  free(degree_compteur) ;
+  free(degree_nb) ;
   free(num) ;
   free(coreness) ;
   free(visited) ;
+  free(g) ;
+
   return c ;
 }
