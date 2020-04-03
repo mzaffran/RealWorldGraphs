@@ -73,7 +73,7 @@ int SearchMin(double* l, unsigned long n){
     unsigned long i;
     for (i=0;i<n;i++)
     {
-        if ((l[i]<minvalue) && (l[i] <= 1) && (0 <= l[i]))
+        if ((l[i]<minvalue) && (l[i] <= 1) && (0 < l[i]))
         {
             minvalue=l[i];
             minindex=i;
@@ -82,7 +82,7 @@ int SearchMin(double* l, unsigned long n){
     return(minindex);
 }
 
-void getPages (edgelist *g, int number, char** pagenames, double* pagerank){
+void getPages (edgelist* g, int number, char** pagenames, double* pagerank){
 
     unsigned long index;
     int i;
@@ -103,9 +103,29 @@ void getPages (edgelist *g, int number, char** pagenames, double* pagerank){
 
 }
 
+void savePages (edgelist* g, double* pagerank, double alpha){
+
+  char name[100] ;
+  char alpha_str[10] ;
+  sprintf(alpha_str, "%.2f", alpha) ;
+  strcat(name, alpha_str) ;
+  strcat(name, "_PageRank.txt") ;
+
+  FILE *results = fopen(name, "w") ;
+  fprintf(results, "ID;PageRank;\n");
+
+  unsigned long i;
+  for (i=0;i<g->n;i++)
+  {
+    fprintf(results, "%lu;%lf;\n", i, pagerank[i]);
+  }
+
+  fclose(results);
+}
+
 int main(int argc,char** argv){
 	edgelist* g;
-	time_t t1,t2,t3,t4;
+	time_t t1,t2,t3,t4,t5;
 
 	t1=time(NULL);
 
@@ -130,10 +150,34 @@ int main(int argc,char** argv){
 	printf("=== Pagerank time = %ldh%ldm%lds\n",(t3-t2)/3600,((t3-t2)%3600)/60,((t3-t2)%60));
   printf("=== Overall pagerank time = %ldh%ldm%lds\n",(t3-t1)/3600,((t3-t1)%3600)/60,((t3-t1)%60));
 
+  printf("=== Saving the results. ");
+
+  // savePages (g, pagerank, alpha) ;
+
+  char name[100] ;
+  char alpha_str[10] ;
+  sprintf(alpha_str, "%.2f", alpha) ;
+  strcat(name, alpha_str) ;
+  strcat(name, "_PageRank.txt") ;
+
+  FILE *results = fopen(name, "w") ;
+  fprintf(results, "ID;PageRank;\n");
+
+  unsigned long i;
+  for (i=0;i<g->n;i++)
+  {
+    fprintf(results, "%lu;%lf;\n", i, pagerank[i]);
+  }
+
+  fclose(results);
+
+  t4=time(NULL);
+	printf("Saving time = %ldh%ldm%lds\n",(t4-t3)/3600,((t4-t3)%3600)/60,((t4-t3)%60));
+
   getPages (g, 5, pagenames, pagerank);
 
-	t4=time(NULL);
-	printf("=== Overall time = %ldh%ldm%lds\n",(t4-t1)/3600,((t4-t1)%3600)/60,((t4-t1)%60));
+	t5=time(NULL);
+	printf("=== Overall time = %ldh%ldm%lds\n",(t5-t1)/3600,((t5-t1)%3600)/60,((t5-t1)%60));
 
   free_edgelist(g);
   free(pagenames);
