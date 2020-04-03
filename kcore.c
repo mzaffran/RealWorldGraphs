@@ -1,10 +1,12 @@
 #include "adjarray.c"
 
-int kcore(adjlist* g);
+int kcore(adjlist* g, unsigned long *degree, unsigned long *coreness);
+
+void saveKCore(char* input_name, adjlist* g, unsigned long *degree, unsigned long *coreness) ;
 
 int main(int argc,char** argv){
 
-  time_t t1,t2 ;
+  time_t t1,t2,t3,t4;
 
   t1=time(NULL);
 
@@ -24,22 +26,38 @@ int main(int argc,char** argv){
 
   mkadjlist(g);
 
-  int c = kcore(g);
-
   t2=time(NULL);
+	printf("=== Graph preparation time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60));
 
-  printf("=== Overall time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60)) ;
+  unsigned long *degree = calloc(g->n,sizeof(unsigned long)) ;
+  unsigned long *coreness = calloc(g->n,sizeof(unsigned long)) ;
+  int c = kcore(g, degree, coreness);
+
+  t3=time(NULL);
+	printf("=== K-Core time = %ldh%ldm%lds\n",(t3-t2)/3600,((t3-t2)%3600)/60,((t3-t2)%60));
+  printf("=== Overall k-core time = %ldh%ldm%lds\n",(t3-t1)/3600,((t3-t1)%3600)/60,((t3-t1)%60));
 
   printf("=== Core-value: %d\n", c) ;
+
+  printf("=== Saving the results. ");
+
+  saveKCore(argv[1], g, degree, coreness) ;
+
+  t4=time(NULL);
+	printf("Saving time = %ldh%ldm%lds\n",(t4-t3)/3600,((t4-t3)%3600)/60,((t4-t3)%60));
+
+  printf("=== Overall time = %ldh%ldm%lds\n",(t4-t1)/3600,((t4-t1)%3600)/60,((t4-t1)%60));
+
+  free(degree) ;
+  free(coreness) ;
 
   return c ;
 }
 
-int kcore(adjlist* g){
+int kcore(adjlist* g, unsigned long *degree, unsigned long *coreness){
   // Création d'une liste contenant les degrés de chaque noeud
   int i;
   int max_degree = 0 ;
-  unsigned long *degree = calloc(g->n,sizeof(unsigned long)) ;
   unsigned long *degree_nb = calloc(g->e,sizeof(unsigned long)) ;
   for (i=0; i<g->n; i++) {
     degree[i] = g->cd[i+1]-g->cd[i];
@@ -69,7 +87,6 @@ int kcore(adjlist* g){
 
   int c = 0 ;
   unsigned long *num = calloc(g->n,sizeof(unsigned long)) ;
-  unsigned long *coreness = calloc(g->n,sizeof(unsigned long)) ;
   int *visited = calloc(g->n,sizeof(unsigned long)) ; // visited[node] prendra la valeur 1 une fois que nous aurons visité node
 
   int l = 0 ;
@@ -116,15 +133,34 @@ int kcore(adjlist* g){
     node_number-- ;
   }
 
-  free(degree) ;
   free(ordered_nodes) ;
   free(init) ;
   free(degree_compteur) ;
   free(degree_nb) ;
   free(num) ;
-  free(coreness) ;
   free(visited) ;
   free(g) ;
 
   return c ;
+}
+
+void saveKCore(char* input_name, adjlist* g, unsigned long *degree, unsigned long *coreness){
+  char name[100] = "results/kcore/";
+  char* file = input_name;
+  char *filename;
+  size_t len = strlen(file);
+  filename = strndup(file, len >= 4 ? len - 4 : 0);
+  strcat(name, filename);
+  strcat(name, "_kcore.txt") ;
+
+  FILE *results = fopen(name, "w") ;
+  fprintf(results, "ID;Degree;Coreness;\n");
+
+  unsigned long i;
+  for (i=0;i<g->n;i++)
+  {
+    fprintf(results, "%lu;%lu;%lu;\n", i, degree[i], coreness[i]);
+  }
+
+  fclose(results);
 }

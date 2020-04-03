@@ -464,17 +464,17 @@ adjlist* specificreadedgelist(char* input){
 
 
 adjlist* LFRreadedgelist(char* input){
-    printf("enter lfr read");     
+    printf("enter lfr read");
 	unsigned long e1=NLINKS;
     double u;
 	FILE *file=fopen(input, "r");
 
 	adjlist *g=malloc(sizeof(adjlist));
-	
+
 	char ch[100];
-	
+
     fscanf(file, "%*s %*s %*s %*s %*s %*s %s", ch)  ;
-    printf("ch= ",ch);
+    printf("ch= %s",ch);
     g->n=1000;
 	g->e=0;
 

@@ -105,7 +105,7 @@ void getPages (edgelist* g, int number, char** pagenames, double* pagerank){
 
 void savePages (edgelist* g, double* pagerank, double alpha){
 
-  char name[100] ;
+  char name[100] = "results/pagerank/";
   char alpha_str[10] ;
   sprintf(alpha_str, "%.2f", alpha) ;
   strcat(name, alpha_str) ;
@@ -152,24 +152,7 @@ int main(int argc,char** argv){
 
   printf("=== Saving the results. ");
 
-  // savePages (g, pagerank, alpha) ;
-
-  char name[100] ;
-  char alpha_str[10] ;
-  sprintf(alpha_str, "%.2f", alpha) ;
-  strcat(name, alpha_str) ;
-  strcat(name, "_PageRank.txt") ;
-
-  FILE *results = fopen(name, "w") ;
-  fprintf(results, "ID;PageRank;\n");
-
-  unsigned long i;
-  for (i=0;i<g->n;i++)
-  {
-    fprintf(results, "%lu;%lf;\n", i, pagerank[i]);
-  }
-
-  fclose(results);
+  savePages (g, pagerank, alpha) ;
 
   t4=time(NULL);
 	printf("Saving time = %ldh%ldm%lds\n",(t4-t3)/3600,((t4-t3)%3600)/60,((t4-t3)%60));
