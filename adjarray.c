@@ -29,7 +29,7 @@ Up to 200 million edges on my laptop with 8G of RAM: takes more or less 4G of RA
 #include <string.h>
 #include "utility.c"
 
-#define NLINKS 120000000 // maximum number of edges for memory allocation, will increase if needed
+#define NLINKS 1900000000 // maximum number of edges for memory allocation, will increase if needed
 
 typedef struct {
 	unsigned long s;
