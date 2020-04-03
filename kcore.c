@@ -10,6 +10,18 @@ int main(int argc,char** argv){
 
   adjlist* g;
   g=readedgelist(argv[1]);
+
+  clean(g);
+
+  edge *B = malloc (g->e*sizeof(edge));
+  printf("Start sorting\n");
+
+  BottomUpMergeSort(g->edges,B, g->e);
+
+  free(B);
+  printf("Finished sorting\n");
+  duplicates(g);
+
   mkadjlist(g);
 
   int c = kcore(g);

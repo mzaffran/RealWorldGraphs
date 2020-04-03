@@ -45,8 +45,8 @@ edgelist* readedgelist(char* input){
 	FILE *file=fopen(input,"r");
 
 	char ch[100];
-    fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s", ch)  ;
-    printf("%s\n",ch);
+  fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s", ch)  ;
+  // printf("%s\n",ch);
 	edgelist *g=malloc(sizeof(edgelist));
 	g->n=0;
 	g->e=0;
@@ -76,35 +76,31 @@ void free_edgelist(edgelist *g){
 
 
 char** readpagelist(char* input, unsigned long n){
-    printf("enter pagelist\n");
+  printf("=== Enter pagelist\n");
 	FILE *file=fopen(input,"r");
 
 	char ch[100];
 	unsigned long i=0,k=0;
-    fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s", ch)  ;
-    printf("%s\n",ch);
+  fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s", ch)  ;
+  // printf("%s\n",ch);
 	char** h=malloc(n*sizeof(char*));
 
 	//fscanf(file,"%lu %s\n", &i, ch);
 	//printf("ff %s\n", ch);
 
+  char* word = malloc(100) ;
 
-    char* word = malloc(100) ;
+  while(fscanf( file, "%lu", &i)!=EOF){
+                fscanf( file, " %[^\n]", word);
+                h[i]=malloc(strlen(word) + 1);
+                strcpy(h[i],word);
+                k++;
 
-    while(fscanf( file, "%lu", &i)!=EOF){
-                  fscanf( file, " %[^\n]", word);
-                  h[i]=malloc(strlen(word) + 1);
-                  strcpy(h[i],word);
-                  k++;
-
-                  //if (k<=10){
-                  //printf("%lu %s ",i,g[i]);
-                  //}
-    }
-    printf("number of page names found %lu\n",k);
-
-
-
+                //if (k<=10){
+                //printf("%lu %s ",i,g[i]);
+                //}
+  }
+  printf("Number of page names found: %lu\n",k);
 
 	fclose(file);
 	free(word);
