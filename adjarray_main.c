@@ -10,15 +10,15 @@ int main(int argc,char** argv){
 	g=readedgelist(argv[1]);
 	printf("Number of edges: %lu\n",g->e);
 
-    //clean(g);
+  //clean(g);
 
-    //mergeSort(g->edges,0, g->e-1);
-    //edge *B =malloc (g->e*sizeof(edge));
-    printf("Start sorting");
-    //BottomUpMergeSort(g->edges, B, g->e);
-    //free(B);
-    printf("Finished sorting\n");
-    //duplicates(g);
+  //mergeSort(g->edges,0, g->e-1);
+  //edge *B =malloc (g->e*sizeof(edge));
+  //printf("Start sorting");
+  //BottomUpMergeSort(g->edges, B, g->e);
+  //free(B);
+  //printf("Finished sorting\n");
+  //duplicates(g);
 
 
 	printf("Number of nodes: %lu\n",g->n);
@@ -31,7 +31,7 @@ int main(int argc,char** argv){
 
 	t2=time(NULL);
 
-	printf("- Overall time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60));
+	printf("=== Overall time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60));
 
 
 
