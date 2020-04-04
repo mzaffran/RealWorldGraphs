@@ -76,7 +76,7 @@ void free_edgelist(edgelist *g){
 
 
 char** readpagelist(char* input, unsigned long n){
-  printf("=== Enter pagelist\n");
+  //printf("=== Enter pagelist\n");
 	FILE *file=fopen(input,"r");
 
 	char ch[100];
@@ -103,7 +103,7 @@ char** readpagelist(char* input, unsigned long n){
   printf("Number of page names found: %lu\n",k);
 
 	fclose(file);
-	free(word);
+	//free(word);
 	return h;
 }
 
@@ -131,3 +131,116 @@ char** readpagelist(char* input, unsigned long n){
 //}
 //
 //
+void BottomUpMerge2(unsigned long A[], unsigned long oldindices[], unsigned long iLeft, unsigned long iRight, unsigned long iEnd, unsigned long B[],unsigned long oldindices2[])
+{
+    unsigned long i,j,k;
+    i = iLeft, j = iRight;
+    // While there are elements in the left or right runs...
+    for (k = iLeft; k < iEnd; k++) {
+        // If left run head exists and is <= existing right run head.
+        if (i < iRight && (j >= iEnd || A[i]>A[j]  )) {
+            B[k] = A[i];
+            oldindices2[k]=oldindices[i];
+            i = i + 1;
+        } else {
+            B[k] = A[j];
+            oldindices2[k]=oldindices[j];
+            j = j + 1;
+        }
+    }
+}
+
+void CopyArray2(unsigned long B[], unsigned long A[], unsigned long n)
+{
+     unsigned long i;
+    for(i = 0; i < n; i++)
+        A[i] = B[i];
+}
+void BottomUpMergeSort2(unsigned long A[],unsigned long B[], unsigned long n , unsigned long oldindices[],unsigned long oldindices2[])
+{
+     unsigned long width,i;
+    // Each 1-element run in A is already "sorted".
+    // Make successively longer sorted runs of length 2, 4, 8, 16... until whole array is sorted.
+    for (width = 1; width < n; width = 2 * width)
+    {
+        // Array A is full of runs of length width.
+        for (i = 0; i < n; i = i + 2 * width)
+        {
+            // Merge two runs: A[i:i+width-1] and A[i+width:i+2*width-1] to B[]
+            // or copy A[i:n-1] to B[] ( if(i+width >= n) )
+            BottomUpMerge2(A, oldindices, i, min(i+width, n), min(i+2*width, n), B,oldindices2);
+        }
+        // Now work array B is full of runs of length 2*width.
+        // Copy array B to array A for next iteration.
+        // A more efficient implementation would swap the roles of A and B.
+        CopyArray2(B, A, n);
+        CopyArray2(oldindices2,oldindices,n);
+        // Now array A is full of runs of length 2*width.
+    }
+}
+
+unsigned long* renamevertices(edgelist* g){
+
+	unsigned long i;
+	unsigned long *d=calloc(g->n,sizeof(unsigned long));
+  if (d==NULL)
+     printf("failed to allocate d\n");
+	for (i=0;i<g->e;i++)
+	{
+		d[g->edges[i].s]++;
+		d[g->edges[i].t]++;
+	}
+
+  unsigned long *oldindices = malloc(g->n*sizeof(unsigned long));
+  unsigned long *oldindices2 = malloc(g->n*sizeof(unsigned long));
+  unsigned long *ordered_d =  malloc(g->n*sizeof(unsigned long));
+  if (oldindices==NULL)
+     printf("Failed to allocate old indices\n");
+  if (oldindices2==NULL)
+     printf("Failed to allocate old indices2\n");
+  if (ordered_d==NULL)
+     printf("Failed to allocate old ordered_d\n");
+  for (i=0; i< g->n; i++)
+	{
+    oldindices[i]=i;
+    oldindices2[i]=i;
+  }
+  BottomUpMergeSort2(d, ordered_d, g->n , oldindices, oldindices2);
+
+  free(ordered_d);
+  free(oldindices2);
+
+  unsigned long isolated_nodes=0;
+  i=g->n-1;
+
+  while (d[i]==0)
+	{
+    isolated_nodes++;
+    i--;
+  }
+
+  free(d);
+
+  unsigned long *newindices = malloc(g->n*sizeof(unsigned long));
+  if (newindices==NULL)
+     printf("failed allocateion of new indices\n");
+
+  for (i=0 ; i<g->n; i++)
+	{
+    newindices[oldindices[i]]=i;
+  }
+
+  //free(oldindices);
+
+
+  for (i=0; i<g->e; i++)
+	{
+    g->edges[i].s=newindices[g->edges[i].s];
+    g->edges[i].t=newindices[g->edges[i].t];
+  }
+
+  free(newindices);
+
+  g->n -= isolated_nodes;
+  return(oldindices);
+}
