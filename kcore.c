@@ -161,13 +161,7 @@ void saveKCore(char* input_name, adjlist* g, unsigned long *degree, unsigned lon
   char name[100] = "results/kcore/";
 
   char* filename = input_name;
-
-  //int len = strlen(input_name)-4 ;
-
-  //char * filename = strndup(file, len);
-
   filename[strlen(filename)-4]=0;
-
   strcat(name, filename);
   strcat(name, "_kcore.txt") ;
 
