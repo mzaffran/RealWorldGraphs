@@ -8,24 +8,6 @@ unsigned long min (unsigned long a,unsigned long b){
        return (a<b) ? a : b;
 }
 
-
-// char *strndup(char *str, int chars)
-// {
-//     char *buffer;
-//     int n;
-//
-//     buffer = (char *) malloc(chars +1);
-//     if (buffer)
-//     {
-//
-//         for (n = 0; ((n < chars) && (str[n] != 0)) ; n++) buffer[n] = str[n];
-//
-//         buffer[n] = 0;
-//     }
-//
-//     return buffer;
-// }
-
 /*
    A C-program for MT19937-64 (2004/9/29 version).
    Coded by Takuji Nishimura and Makoto Matsumoto.
