@@ -131,56 +131,51 @@ int main(int argc,char** argv){
 
 	printf("=== Reading edgelist from file %s\n",argv[1]);
 	g=readedgelist(argv[1]);
-    
-    int suppr = atoi(argv[4]);
-    if (!suppr){
-        printf("Number of nodes: %lu\n",g->n);
-	    printf("Number of edges: %lu\n",g->e);
-    }
-    t2=time(NULL);
-	
-  
+
+  int suppr = atoi(argv[4]);
+  if (!suppr){
+    printf("Number of nodes: %lu\n",g->n);
+    printf("Number of edges: %lu\n",g->e);
+  }
+  t2=time(NULL);
+
+
   char* alpha_value = argv[3] ;
   double alpha ;
   alpha = strtod(alpha_value, NULL);
-  
-  
+
+
   char** pagenames = readpagelist(argv[2], g->n);
-  
+
   double* pagerank;
 
+  if(suppr)
+  {
+    unsigned long i,oldn;
+    oldn=g->n;
+    unsigned long* oldindices = renamevertices(g);
 
+    printf("Number of nodes: %lu\n",g->n);
+    printf("Number of edges: %lu\n",g->e);
+    t2=time(NULL);
 
-  
-    if(suppr){
-                
-      unsigned long i,oldn;
-      oldn=g->n;
-      unsigned long* oldindices = renamevertices(g);
-      
-      printf("Number of nodes: %lu\n",g->n);
-	  printf("Number of edges: %lu\n",g->e);
-      t2=time(NULL);
-      
-      char** pagenames2 = malloc(g->n*sizeof(char*));
-      for(i=0; i<g->n; i++){
-          pagenames2[i]=pagenames[oldindices[i]];         
-      }
-      free(oldindices);
-      pagenames=pagenames2;
+    char** pagenames2 = malloc(g->n*sizeof(char*));
+    for(i=0; i<g->n; i++)
+    {
+        pagenames2[i]=pagenames[oldindices[i]];
     }
-  
-  
- 
+    free(oldindices);
+    pagenames=pagenames2;
+  }
 
   printf("=== Graph preparation time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60));
-  
+
   pagerank = Pagerank(g, alpha);
-  
+
   t3=time(NULL);
   printf("=== Pagerank time = %ldh%ldm%lds\n",(t3-t2)/3600,((t3-t2)%3600)/60,((t3-t2)%60));
-  printf("=== Overall pagerank time = %ldh%ldm%lds\n",(t3-t1)/3600,((t3-t1)%3600)/60,((t3-t1)%60)); 
-  
+  printf("=== Overall pagerank time = %ldh%ldm%lds\n",(t3-t1)/3600,((t3-t1)%3600)/60,((t3-t1)%60));
+
   printf("=== Saving the results. ");
 
   savePages (g, pagerank, alpha) ;
