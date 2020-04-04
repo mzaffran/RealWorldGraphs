@@ -11,8 +11,13 @@ int main(int argc,char** argv){
   t1=time(NULL);
 
   adjlist* g;
-  g=readedgelist(argv[1]);
-  //g=specificreadedgelist(argv[1]); // to be used for email and scholar/net
+  int header = atoi(argv[2]);
+  if (header){
+    g=readedgelist(argv[1]);
+  }
+  else{
+    g=specificreadedgelist(argv[1]);
+  }
 
   clean(g);
 

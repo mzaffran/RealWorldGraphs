@@ -46,7 +46,13 @@ int main(int argc,char** argv){
 	t1=time(NULL);
 
 	printf("Reading edgelist from file %s\n",argv[1]);
-	g=readedgelist(argv[1]);
+  int header = atoi(argv[2]);
+  if (header){
+    g=readedgelist(argv[1]);
+  }
+  else{
+    g=specificreadedgelist(argv[1]);
+  }
 
   clean(g);
   printf("Start renaming vertices\n");
