@@ -1,5 +1,5 @@
 #include "adjarray.c"
-
+#include <string.h>
 int kcore(adjlist* g, unsigned long *degree, unsigned long *coreness);
 
 void saveKCore(char* input_name, adjlist* g, unsigned long *degree, unsigned long *coreness) ;
@@ -11,7 +11,7 @@ int main(int argc,char** argv){
   t1=time(NULL);
 
   adjlist* g;
-  g=readedgelist(argv[1]);
+  g=specificreadedgelist(argv[1]);
 
   clean(g);
 
@@ -24,6 +24,9 @@ int main(int argc,char** argv){
   printf("Finished sorting\n");
   duplicates(g);
 
+      
+  printf("Number of nodes: %lu\n",g->n);
+  printf("Number of edges: %lu\n",g->e);
   mkadjlist(g);
 
   t2=time(NULL);
@@ -31,6 +34,10 @@ int main(int argc,char** argv){
 
   unsigned long *degree = calloc(g->n,sizeof(unsigned long)) ;
   unsigned long *coreness = calloc(g->n,sizeof(unsigned long)) ;
+  
+  if (degree==NULL || coreness==NULL){
+     printf("Memory failed at degree or corennes")         ;        
+  }
   int c = kcore(g, degree, coreness);
 
   t3=time(NULL);
@@ -39,7 +46,7 @@ int main(int argc,char** argv){
 
   printf("=== Core-value: %d\n", c) ;
 
-  printf("=== Saving the results. ");
+  printf("=== Saving the results\n");
 
   saveKCore(argv[1], g, degree, coreness) ;
 
@@ -139,22 +146,27 @@ int kcore(adjlist* g, unsigned long *degree, unsigned long *coreness){
   free(degree_nb) ;
   free(num) ;
   free(visited) ;
-  free(g) ;
+ 
 
   return c ;
 }
 
 void saveKCore(char* input_name, adjlist* g, unsigned long *degree, unsigned long *coreness){
   char name[100] = "results/kcore/";
+
   char* file = input_name;
-  char *filename;
-  size_t len = strlen(file);
-  filename = strndup(file, len >= 4 ? len - 4 : 0);
+  
+  int len = strlen(input_name)-4 ;
+
+  char * filename = strndup(file, len );
+  
   strcat(name, filename);
   strcat(name, "_kcore.txt") ;
 
+  
   FILE *results = fopen(name, "w") ;
-  fprintf(results, "ID;Degree;Coreness;\n");
+
+  fprintf(results,"ID;Degree;Coreness;\n");
 
   unsigned long i;
   for (i=0;i<g->n;i++)
