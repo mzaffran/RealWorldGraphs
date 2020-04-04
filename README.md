@@ -1,6 +1,6 @@
 # RealWorldGraphs
 
-Project for the class "Operational Research and Massive Data", SOD322, final year  at ENSTA Paris, M2 MPRO and M2 Data Science. Part of the lecture given by Maximilien Danisch.
+Project for the class "Operational Research and Massive Data", SOD322, [final year  at ENSTA Paris](https://perso.ensta-paris.fr/~pcarpent/SOD/), [M2 MPRO](https://uma.ensta-paris.fr/mpro/) and [M2 Data Science](https://datascience-x-master-paris-saclay.fr/). Part of the lecture given by Maximilien Danisch.
 
 _Authors: Walid Makhlouf and Margaux Zaffran_
 
@@ -23,4 +23,4 @@ The graphs on which our algorithms were tested are the following:
 - http://snap.stanford.edu/data/com-Amazon.html ;
 - http://snap.stanford.edu/data/email-Eu-core.html ;
 - http://snap.stanford.edu/data/com-LiveJournal.html ;
-- http://snap.stanford.edu/data/com-Orkut.html. 
+- http://snap.stanford.edu/data/com-Orkut.html.
