@@ -70,7 +70,7 @@ void connected(adjlist* g){
      printf("Nombre de composantes connexes : %lu\n",k);
      for (i=1;i<k+1;i++)
      {
-         printf("Nombre d'Ã©lÃ©ments de la composante %lu : %lu\n",i,contains[i]);
+         printf("Nombre d'éléments de la composante %lu : %lu\n",i,contains[i]);
      }
      //contains = realloc((k+1)*sizeof(unsigned long));
      free(contains);
@@ -79,7 +79,7 @@ void connected(adjlist* g){
 //Find a lower bound to tthe diameter
 // !! not tested on graphs with many components !!
 
-unsigned long diameter(adjlist* g){
+unsigned long diameter(adjlist* g, int tmax){
      int* marked = calloc(g->n,sizeof(int)) ;
      int* depth = calloc(g->n,sizeof(int)) ;
      unsigned long* FIFO = malloc(g->n*sizeof(unsigned long)) ;
@@ -101,12 +101,14 @@ unsigned long diameter(adjlist* g){
      depth[0]=0;
 
      t1=time(NULL);
-     int tmax=60, stagnate=0;
+     int stagnate=0;
      while (time(NULL) -t1 <=tmax)
      {
+          
          stagnate=0;
          while (stagnate <5)
          {
+
              while(end>=start)
              {
                  u=FIFO[start];
@@ -129,21 +131,26 @@ unsigned long diameter(adjlist* g){
                 best_source=FIFO[0];
                 best_destination= last_marked;
                 diameter = depth[last_marked];
-                for (i=0;i<g->n;i++)
-                {
-                    if (marked[i]>0)
-                       marked[i]=0;
-                }
-                start=0;
-                FIFO[start]=last_marked;
-                end=0;
-                marked[last_marked]=1;
-                depth[last_marked]=0;
+                
              }
              else
              {
                   stagnate++;
              }
+             
+             // repartir du dernier noeuds trouve
+             for (i=0;i<g->n;i++){
+            
+                if (marked[i]>0){
+                   marked[i]=0;
+                   depth[i]=0;
+                }
+             }
+             start=0;
+             FIFO[start]=last_marked;
+             end=0;
+             marked[last_marked]=1;
+             depth[last_marked]=0;
          }
          newsource=genrand64_int64()%g->n;
 
@@ -158,7 +165,7 @@ unsigned long diameter(adjlist* g){
     free (marked);
     free(depth);
 
-    printf("Longest shortest path found is between nodes %lu and %lu\n", best_source, best_destination);
+    printf("Longest shortest path found is between nodes %lu and %lu\n (after being renamed)", best_source, best_destination);
     return(diameter);
 }
 
@@ -258,14 +265,15 @@ int main(int argc,char** argv){
   printf("Start counting connected parts\n");
   connected(g);
   t3=time(NULL);
-  printf("BFS finished\n");
+  
 
-  printf("=== BFS time = %ldh%ldm%lds\n",(t3-t2)/3600,((t3-t2)%3600)/60,((t3-t2)%60));
+  printf("=== Counting time = %ldh%ldm%lds\n",(t3-t2)/3600,((t3-t2)%3600)/60,((t3-t2)%60));
 
   printf("Start finding lower bound to diameter\n");
-  unsigned long d = diameter(g);
+  int tmax = atoi(argv[3]);
+  unsigned long d = diameter(g , tmax);
 
-  printf("Lower bound for graph diameter: %lu", d );
+  printf("Lower bound for graph diameter: %lu\n", d );
 
   t4=time(NULL);
 
