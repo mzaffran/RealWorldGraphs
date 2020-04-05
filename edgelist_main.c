@@ -7,7 +7,13 @@ int main(int argc,char** argv){
 	t1=time(NULL);
 
 	printf("Reading edgelist from file %s\n",argv[1]);
-	g=oldreadedgelist(argv[1]);
+	int header = atoi(argv[2]);
+  if (header){
+    g=oldreadedgelist(argv[1]);
+  }
+  else{
+    g=oldspecificreadedgelist(argv[1]);
+  }
 
 	printf("Number of nodes: %lu\n",g->n);
 	printf("Number of edges: %lu\n",g->e);
