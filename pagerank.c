@@ -97,7 +97,7 @@ void getPages (edgelist* g, int number, char** pagenames, double* pagerank){
     for (i=0;i<number;i++)
     {
         index = SearchMin(pagerank, g->n);
-        printf("Page with rank %lu has ID: %lu, probability %lf and name %s\n",g->n-i, index, pagerank[index], pagenames[index]);
+        printf("Page with rank %lu has ID: %lu, probability %0.8lf and name %s\n",g->n-i, index, pagerank[index], pagenames[index]);
         pagerank[index]=-1;
     }
 

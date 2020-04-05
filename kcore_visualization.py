@@ -65,6 +65,8 @@ maxID
 #Yun-ji Jang
 
 df[(df.Coreness==6) & (df.Degree==df[df.Coreness==6].Degree.max())]
+#Ali Khademhosseini
+
 
 df[(df.Coreness==8) & (df.Degree==df[df.Coreness==8].Degree.max())]
 

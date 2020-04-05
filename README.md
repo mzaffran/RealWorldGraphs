@@ -40,7 +40,7 @@ The following scripts are in python:
 - **kcore_visualization.py** allows to draw a scatter plot of corenesses versus degrees, with intensity ;
 - **generategraph.py** allows to generate graphs with known communities ;
 - **readgraph.py** allows to display some graphs with known communities;
-- **pagerank_visualization.p** allows to draw a scatter plot of PageRank algorithm with different alpha;
+- **pagerank_visualization.py** allows to draw a scatter plot of PageRank algorithm with different alpha;
 
 ## Graphs
 
