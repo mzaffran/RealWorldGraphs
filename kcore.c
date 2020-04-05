@@ -157,18 +157,16 @@ int kcore(adjlist* g, unsigned long *degree, unsigned long *coreness, unsigned l
   free(num) ;
   free(visited) ;
 
-
   return c ;
 }
 
-void saveKCore(char* input_name, adjlist* g, unsigned long *degree, unsigned long *coreness){
+void saveKCore(char* input_name, adjlist* g, unsigned long *degree_fixed, unsigned long *coreness){
   char name[100] = "results/kcore/";
 
   char* filename = input_name;
   filename[strlen(filename)-4]=0;
   strcat(name, filename);
   strcat(name, "_kcore.txt") ;
-
 
   FILE *results = fopen(name, "w") ;
 
@@ -177,7 +175,7 @@ void saveKCore(char* input_name, adjlist* g, unsigned long *degree, unsigned lon
   unsigned long i;
   for (i=0;i<g->n;i++)
   {
-    fprintf(results, "%lu;%lu;%lu;\n", i, degree[i], coreness[i]);
+    fprintf(results, "%lu;%lu;%lu;\n", i, degree_fixed[i], coreness[i]);
   }
 
   fclose(results);
