@@ -10,6 +10,8 @@ int main(int argc,char** argv){
 
   t1=time(NULL);
 
+  printf("=== Preparing the graph\n");
+
   adjlist* g;
   int header = atoi(argv[2]);
   if (header){
@@ -29,7 +31,6 @@ int main(int argc,char** argv){
   free(B);
   printf("Finished sorting\n");
   duplicates(g);
-
 
   printf("Number of nodes: %lu\n",g->n);
   printf("Number of edges: %lu\n",g->e);

@@ -26,6 +26,7 @@ Takes more or less 4G of RAM and 10 seconds (I have an SSD hardrive) for 100.000
 #include <stdbool.h>
 #include <time.h>//to estimate the runing time
 #include <unistd.h>
+#include "utility.c"
 
 #define NLINKS 100000000 //maximum number of edges for memory allocation, will increase if needed
 
@@ -41,12 +42,6 @@ typedef struct {
 	edge *edges;//list of edges
 	bool *mat;//adjacency matrix
 } adjmatrix;
-
-//compute the maximum of three unsigned long
-inline unsigned long max3(unsigned long a,unsigned long b,unsigned long c){
-	a=(a>b) ? a : b;
-	return (a>c) ? a : c;
-}
 
 adjmatrix* oldreadedgelist(char* input){
 	unsigned long e1=NLINKS;
@@ -75,13 +70,13 @@ adjmatrix* oldreadedgelist(char* input){
     g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
 		if ((g->e)++==e1)
 		{//increase allocated RAM if needed
-    	printf("realloc\n");
+    	printf("Realloc\n");
 			//e1+= NLINKS;
 			e1+=10000000;
       g->edges=realloc(g->edges,e1*sizeof(edge));
   		if (g->edges == NULL)
 			{
-				printf("edges became null");
+				printf("Edges became null");
 			}
 		}
   }
@@ -123,15 +118,15 @@ void mkmatrix(adjmatrix* g){
 	unsigned long i,u,v;
 	g->mat=calloc(g->n*g->n,sizeof(int));
 	if (g->mat==NULL){
-       printf("null");
+       printf("Null");
     }
 	for (i=0;i<g->e;i++){
-        
+
 		u=g->edges[i].s;
 		v=g->edges[i].t;
-		printf("%lu %lu\n", u+g->n*v,v+g->n*u );
+		//printf("%lu %lu\n", u+g->n*v,v+g->n*u );
 		g->mat[u+g->n*v]=1;
-		printf("1\n");
+		//printf("1\n");
 		g->mat[v+g->n*u]=1;
 	}
 }
@@ -157,15 +152,13 @@ int main(int argc,char** argv){
 
 	printf("Building the adjacency matrix\n");
 	mkmatrix(g);
-	
+
 	t2=time(NULL);
 
-	printf("- Overall time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60));
-	
+	printf("=== Overall time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60));
+
 	sleep(20);
 	free_adjmatrix(g);
-
-
 
 	return 0;
 }

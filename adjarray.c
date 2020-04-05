@@ -354,7 +354,7 @@ void clean(adjlist* g){
 
      if (repetitions !=0)
 		 {
-         printf("boucle %lu\n",repetitions);
+         printf("Number of deleted loops: %lu\n",repetitions);
          edge* newedges = malloc((g->e - repetitions)*sizeof(edge));
          if (newedges == NULL)
             printf("Failed memory allocation of newedges in function clean.c\n");
@@ -445,13 +445,13 @@ adjlist* specificreadedgelist(char* input){
     g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
 		if ((g->e)++==e1)
 		{//increase allocated RAM if needed
-    	printf("realloc\n");
+    	printf("Realloc\n");
 			//e1+= NLINKS;
 			e1+=10000000;
       g->edges=realloc(g->edges,e1*sizeof(edge));
   		if (g->edges == NULL)
 			{
-				printf("edges became null");
+				printf("Edges became null");
 			}
 		}
   }
