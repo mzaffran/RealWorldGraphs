@@ -21,17 +21,6 @@ int main(int argc,char** argv){
     g=specificreadedgelist(argv[1]);
   }
 
-  clean(g);
-
-  edge *B = malloc (g->e*sizeof(edge));
-  printf("Start sorting\n");
-
-  BottomUpMergeSort(g->edges,B, g->e);
-
-  free(B);
-  printf("Finished sorting\n");
-  duplicates(g);
-
   printf("Number of nodes: %lu\n",g->n);
   printf("Number of edges: %lu\n",g->e);
   mkadjlist(g);
