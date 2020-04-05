@@ -1,3 +1,7 @@
+// First argument: input file for first community partition, each line containing the name of the node, a space then its label
+// Second argument: input file for second community partition, each line containing the name of the node, a space then its label 
+//NB: Labels must be indexed from 1 to number of labels for each file.
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -126,8 +130,8 @@ void normmi (unsigned long* labels1, unsigned long* labels2, unsigned long n, do
             }                 
         }
     }
-    z=(a+b)/2-2*a*b/n*(n-1);
-    *ari= (x-2*a*b/n*(n-1)) / z;                           
+    z=(a+b)/2-a*b/((n*(n-1))/2);
+    *ari= (x-a*b/((n*(n-1))/2)) / z;                           
 }   
 
 

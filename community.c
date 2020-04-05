@@ -1,3 +1,7 @@
+// First argument: Name of the input file (graph)
+// Second argument: Name of the file that will contain node labels
+// 3rd argument: 1 if you want to read file with a predefined header, 0 if input file has no header
+
 #include "adjarray.c"
 
 unsigned long* labelPropagation(adjlist* g);
@@ -9,17 +13,23 @@ int main(int argc,char** argv){
   t1=time(NULL);
 
   adjlist* g;
-  g=LFRreadedgelist(argv[1]);
-
+  int header= argv[3];
+  if (header){
+     g=readedgelist(argv[1]);
+  }
+  else{
+      g=specificreadedgelist(argv[1]);  
+  } 
   clean(g);
   
 //  renamevertices(g);  
 //  
-  FILE *file=fopen("lfr.txt", "w");
+  FILE *file=fopen("lfr3.txt", "w");
   for (i=0;i<g->e;i++){
     fprintf(file, "%lu %lu\n",g->edges[i].s, g->edges[i].t);
   }
   fclose(file);
+
 
 
 //  edge *B = malloc (g->e*sizeof(edge));
@@ -90,7 +100,7 @@ unsigned long* labelPropagation(adjlist* g){ // version n^2
     int finish=0;
 
     while (!finish){
-        //printf("nb labels= %lu\n",nblabels);
+        printf("nb labels= %lu\n",nblabels);
         finish=1;
         //shuffle
         for (i=g->n-1; i>=1; i--)
@@ -180,100 +190,100 @@ unsigned long* labelPropagation(adjlist* g){ // version n^2
     return(labels);
 }
 
-
-void labelPropagation2(adjlist* g){
-    unsigned long* labels = malloc(g->n*sizeof(unsigned long)); // list of available labels
-    unsigned long* nodelabels = malloc(g->n*sizeof(unsigned long)); // index to get label of each node from the list of labels
-    unsigned long* labelusage = malloc(g->n*sizeof(unsigned long)); // how many times the label is used
-    unsigned long* order = malloc(g->n*sizeof(unsigned long)); // shuffle order
-    unsigned long* freq = calloc(g->n,sizeof(unsigned long)); // freq of neighbouring labels
-    unsigned long i,j,aux,maxfreq, numberlabels,freqlabel,currentfreq, node;
-    
-    if (labels==NULL || order ==NULL || labelusage == NULL || freq == NULL || nodelabels==NULL){
-       printf("failed memory at labelPropgation2");                 
-    }
-    numberlabels=g->n;
-     
-    for (i=0;i <g->n; i++){
-        labels[i]=i;
-        nodelabels[i]=i;
-        labelusage[i]=1;
-        order[i]=i;
-    }           
-    
-    int finish=0;
-    while (!finish){
-          printf("number labels = %lu \n", numberlabels);
-
-        finish=1;
-        //shuffle
-        for (i=g->n-1; i>=1; i--){
-            
-            j= genrand64_int64()%(i+1);
-            aux=order[i];
-            order[i]=order[j];
-            order[j]=aux;
-            
-        }
-        //printf("fin")    ;
-        //label propagation    
-        for (i=0;i<g->n; i++) {
-            node= order[i];
-            if (g->cd[node+1]-g->cd[node]==0){
-               continue;
-            }
-            //calcul des frequence de chaque label
-            for (j=g->cd[node]; j< g->cd[node+1];j++){
-                freq[labels[nodelabels[g->adj[j]]]]++;
-            }
-            freq[labels[nodelabels[node]]]++;
-            // Recher du label le plus frequent
-            maxfreq=0;
-            freqlabel=nodelabels[node];
-            for (j=0; j< numberlabels ; j++){
-                if (maxfreq< freq[labels[j]]){
-                   maxfreq=freq[labels[j]];
-                   freqlabel=j;
-                   }
-                if (labels[j]== labels[nodelabels[node]] ){
-                   currentfreq = freq[labels[nodelabels[node]]];
-                }
-                freq[labels[j]]=0;
-                   
-            }
-            if ((maxfreq==1 || currentfreq < maxfreq) && labels[nodelabels[node]]!=labels[freqlabel] ){
-              if (-- labelusage[labels[nodelabels[node]]] ==0 ){ // decrease then compare
-                
-                 labels[nodelabels[node]]= labels[numberlabels-1];
-                 //labelusage[nodelabels[node]]= labelusage[numberlabels-1];
-                 numberlabels--;     
-              }  
-                         
-              nodelabels[node]=freqlabel;   
-              labelusage[labels[freqlabel]]++;
-              finish=0;
-               
-                            
-            }                
-            
-            
-            
-        }       
-    }          
-    free(freq);
-    free(order);
-    free(nodelabels);
-    printf("There are %lu labels\n",numberlabels);
-    for (j=0; j<g->n;j++){
-        if (labelusage[labels[j]]>0){
-          // printf("j= %lu  label= %lu\n",j,labels[j]);    
-           printf("Label %lu is used %lu times\n",labels[j],labelusage[labels[j]]);  
-        }  
-    }      
-           
-     
-     
-    free(labelusage);
-    
-    free(labels); 
-}
+//
+//void labelPropagation2(adjlist* g){
+//    unsigned long* labels = malloc(g->n*sizeof(unsigned long)); // list of available labels
+//    unsigned long* nodelabels = malloc(g->n*sizeof(unsigned long)); // index to get label of each node from the list of labels
+//    unsigned long* labelusage = malloc(g->n*sizeof(unsigned long)); // how many times the label is used
+//    unsigned long* order = malloc(g->n*sizeof(unsigned long)); // shuffle order
+//    unsigned long* freq = calloc(g->n,sizeof(unsigned long)); // freq of neighbouring labels
+//    unsigned long i,j,aux,maxfreq, numberlabels,freqlabel,currentfreq, node;
+//    
+//    if (labels==NULL || order ==NULL || labelusage == NULL || freq == NULL || nodelabels==NULL){
+//       printf("failed memory at labelPropgation2");                 
+//    }
+//    numberlabels=g->n;
+//     
+//    for (i=0;i <g->n; i++){
+//        labels[i]=i;
+//        nodelabels[i]=i;
+//        labelusage[i]=1;
+//        order[i]=i;
+//    }           
+//    
+//    int finish=0;
+//    while (!finish){
+//          printf("number labels = %lu \n", numberlabels);
+//
+//        finish=1;
+//        //shuffle
+//        for (i=g->n-1; i>=1; i--){
+//            
+//            j= genrand64_int64()%(i+1);
+//            aux=order[i];
+//            order[i]=order[j];
+//            order[j]=aux;
+//            
+//        }
+//        //printf("fin")    ;
+//        //label propagation    
+//        for (i=0;i<g->n; i++) {
+//            node= order[i];
+//            if (g->cd[node+1]-g->cd[node]==0){
+//               continue;
+//            }
+//            //calcul des frequence de chaque label
+//            for (j=g->cd[node]; j< g->cd[node+1];j++){
+//                freq[labels[nodelabels[g->adj[j]]]]++;
+//            }
+//            freq[labels[nodelabels[node]]]++;
+//            // Recher du label le plus frequent
+//            maxfreq=0;
+//            freqlabel=nodelabels[node];
+//            for (j=0; j< numberlabels ; j++){
+//                if (maxfreq< freq[labels[j]]){
+//                   maxfreq=freq[labels[j]];
+//                   freqlabel=j;
+//                   }
+//                if (labels[j]== labels[nodelabels[node]] ){
+//                   currentfreq = freq[labels[nodelabels[node]]];
+//                }
+//                freq[labels[j]]=0;
+//                   
+//            }
+//            if ((maxfreq==1 || currentfreq < maxfreq) && labels[nodelabels[node]]!=labels[freqlabel] ){
+//              if (-- labelusage[labels[nodelabels[node]]] ==0 ){ // decrease then compare
+//                
+//                 labels[nodelabels[node]]= labels[numberlabels-1];
+//                 //labelusage[nodelabels[node]]= labelusage[numberlabels-1];
+//                 numberlabels--;     
+//              }  
+//                         
+//              nodelabels[node]=freqlabel;   
+//              labelusage[labels[freqlabel]]++;
+//              finish=0;
+//               
+//                            
+//            }                
+//            
+//            
+//            
+//        }       
+//    }          
+//    free(freq);
+//    free(order);
+//    free(nodelabels);
+//    printf("There are %lu labels\n",numberlabels);
+//    for (j=0; j<g->n;j++){
+//        if (labelusage[labels[j]]>0){
+//          // printf("j= %lu  label= %lu\n",j,labels[j]);    
+//           printf("Label %lu is used %lu times\n",labels[j],labelusage[labels[j]]);  
+//        }  
+//    }      
+//           
+//     
+//     
+//    free(labelusage);
+//    
+//    free(labels); 
+//}
