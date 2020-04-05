@@ -126,7 +126,7 @@ void mkmatrix(adjmatrix* g){
 		v=g->edges[i].t;
 		//printf("%lu %lu\n", u+g->n*v,v+g->n*u );
 		g->mat[u+g->n*v]=1;
-		//printf("1\n");
+		printf("1\n");
 		g->mat[v+g->n*u]=1;
 	}
 }

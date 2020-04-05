@@ -73,8 +73,6 @@ void free_edgelist(edgelist *g){
 	free(g);
 }
 
-
-
 char** readpagelist(char* input, unsigned long n){
   //printf("=== Enter pagelist\n");
 	FILE *file=fopen(input,"r");
@@ -106,8 +104,6 @@ char** readpagelist(char* input, unsigned long n){
 	//free(word);
 	return h;
 }
-
-
 
 void BottomUpMerge2(unsigned long A[], unsigned long oldindices[], unsigned long iLeft, unsigned long iRight, unsigned long iEnd, unsigned long B[],unsigned long oldindices2[])
 {
@@ -209,7 +205,6 @@ unsigned long* renamevertices(edgelist* g){
   }
 
   //free(oldindices);
-
 
   for (i=0; i<g->e; i++)
 	{
