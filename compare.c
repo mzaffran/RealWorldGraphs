@@ -5,7 +5,7 @@ void normmi (unsigned long* labels1, unsigned long* labels2, unsigned long n, do
 
 int main(int argc,char** argv){
 
-    double mi,nmi,randindex,ari;
+    double mi,nmi,ari;
 	unsigned long n,u,v,i,j;
     n=0;
     
@@ -78,42 +78,56 @@ void normmi (unsigned long* labels1, unsigned long* labels2, unsigned long n, do
         labelusage1[labels1[i]]++;
         labelusage2[labels2[i]]++; 
     }
+    
+    
+    double y=0;
     for (i=0; i<nl1; i++){
         for (j=0; j<nl2; j++){
             if (c[nl2*i+j]>0){
-               *mi+= (float) c[nl2*labels1[i]+labels2[i]]*log ((float) n*c[nl2*i+j] /( labelusage1[i]*labelusage2[j] ) )/log(2) ;  
-            }
+               y+= (double) c[nl2*i+j]*log ((double) n*c[nl2*i+j] /( labelusage1[i]*labelusage2[j] ) )/log(2) ;  
+            } 
         }
     }
     
-    
+    *mi = y/n;
     
     h1=0; h2=0;
     for (i=0;i<nl1;i++){
-        h1+= (float) labelusage1[i] * log ((float) labelusage1[i]/n)/log(2);
+        h1+= (double) labelusage1[i] * log ((double) labelusage1[i]/n)/log(2);
     }
     for (i=0;i<nl2;i++){
         
-        h2+=(float) labelusage2[i] * log ((float) labelusage2[i]/n)/log(2);
+        h2+=(double) labelusage2[i] * log ((double) labelusage2[i]/n)/log(2);
     }
 
-    *nmi= -2* *mi/(h1+h2);
-    *mi=*mi/n;
+    *nmi= -2* y/(h1+h2);
+    
     
     
     *ari=0;
-    double x=0,z=0;
+    double x=0,z=0,a=0,b=0;
+    
     for (i=0; i<nl1; i++){
-        for (j=0; j<nl2; j++){
-            if (c[nl2*i+j]>1)
-               x+= c[nl2*i+j]*(c[nl2*i+j]-1)/2;
-            if (labelusage1[i]>1 && labelusage2[j]>1)
-               x-= (labelusage1[i]*(labelusage1[i]-1) + labelusage2[j]*(labelusage2[j]-1))/ (2*n*(n-1));
-               z+= (labelusage1[i]*(labelusage1[i]-1)/2 + labelusage2[j]*(labelusage2[j]-1)/2)/2 - (labelusage1[i]*(labelusage1[i]-1) + labelusage2[j]*(labelusage2[j]-1))/ (2*n*(n-1));
-                              
+        
+        if (labelusage1[i]>1){
+           a+=   (labelusage1[i]*labelusage1[i]-1)/2    ;               
         }
     }
-    *ari= x/z;                           
+    for (j=0; j<nl2; j++){
+        if (labelusage2[j]>1){
+           b+=   (labelusage2[j]*labelusage2[j]-1)/2  ;                 
+        }
+    }
+    for (i=0; i<nl1; i++){
+        for (j=0; j<nl2; j++){
+            if (c[nl2*i+j]>1){
+               x+= c[nl2*i+j]*(c[nl2*i+j]-1)/2;
+            
+            }                 
+        }
+    }
+    z=(a+b)/2-2*a*b/n*(n-1);
+    *ari= (x-2*a*b/n*(n-1)) / z;                           
 }   
 
 
