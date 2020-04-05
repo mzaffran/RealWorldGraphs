@@ -64,6 +64,7 @@ int main(int argc,char** argv){
   printf("=== Overall time = %ldh%ldm%lds\n",(t4-t1)/3600,((t4-t1)%3600)/60,((t4-t1)%60));
 
   free(degree) ;
+  free(degree_fixed) ;
   free(coreness) ;
 
   return c ;
