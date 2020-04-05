@@ -29,6 +29,7 @@ plt.xlim((0.9,110))
 plt.ylim((0.9,110))
 ax.set(xlabel='Degree', ylabel='Coreness', title='Google Scholar citations')
 plt.plot(range(101), range(101), 'k-')
+plt.savefig(path+'visu.png')
 plt.show()
 
 
