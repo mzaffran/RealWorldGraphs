@@ -108,29 +108,7 @@ char** readpagelist(char* input, unsigned long n){
 }
 
 
-//int main(int argc,char** argv){
-//	edgelist* g;
-//	time_t t1,t2;
-//
-//	t1=time(NULL);
-//
-//	printf("Reading edgelist from file %s\n",argv[1]);
-//	g=readedgelist(argv[1]);
-//
-//	printf("Number of nodes: %lu\n",g->n);
-//	printf("Number of edges: %lu\n",g->e);
-//
-//    char** h= readpagelist(argv[2], g->n);
-//	free_edgelist(g);
-//
-//	t2=time(NULL);
-//
-//	printf("- Overall time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60));
-//
-//	return 0;
-//}
-//
-//
+
 void BottomUpMerge2(unsigned long A[], unsigned long oldindices[], unsigned long iLeft, unsigned long iRight, unsigned long iEnd, unsigned long B[],unsigned long oldindices2[])
 {
     unsigned long i,j,k;
@@ -243,4 +221,49 @@ unsigned long* renamevertices(edgelist* g){
 
   g->n -= isolated_nodes;
   return(oldindices);
+}
+
+
+edgelist* oldreadedgelist(char* input){
+	unsigned long e1=NLINKS;
+
+	FILE *file=fopen(input, "r");
+
+	edgelist *g=malloc(sizeof(edgelist));
+	g->n=0;
+	g->e=0;
+
+	char ch[100];
+	char nedges [20];
+  fscanf(file, "%*s %*s %*s %*s %*s %*s %*s %*s %*s %*s %s %*s %*s %s", nedges, ch)  ;
+
+  char*eptr;
+  e1 = strtoul(nedges,&eptr,10);
+  g->edges = malloc((e1+1)*sizeof(edge));//allocate some RAM to store edges
+
+ 	if (g->edges==NULL)
+	{
+		printf("Failed allocation of memory to edges\n");
+	}
+
+	while (fscanf(file,"%lu %lu", &(g->edges[g->e].s), &(g->edges[g->e].t))==2)
+	{
+    g->n=max3(g->n,g->edges[g->e].s,g->edges[g->e].t);
+		if ((g->e)++==e1)
+		{//increase allocated RAM if needed
+    	printf("realloc\n");
+			//e1+= NLINKS;
+			e1+=10000000;
+      g->edges=realloc(g->edges,e1*sizeof(edge));
+  		if (g->edges == NULL)
+			{
+				printf("edges became null");
+			}
+		}
+  }
+
+	fclose(file);
+	g->n++;
+	g->edges=realloc(g->edges,g->e*sizeof(edge));
+	return g;
 }
