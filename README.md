@@ -17,7 +17,7 @@ The various programs loading graph as text file and putting them in appropriated
 - kcore.c
 - community.c
 
-## Graphs CAUSED
+## Graphs
 
 The graphs on which our algorithms were tested are the following:
 - http://snap.stanford.edu/data/com-Amazon.html ;
