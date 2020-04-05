@@ -13,11 +13,12 @@ void connected(adjlist* g){
      if (marked==NULL) printf("null m\n");
      if (FIFO==NULL) printf("null f\n");
 
-     unsigned long u, v, i, k, start, end, visitednodes, first_not_marked;
+     unsigned long u, v, i, k, start, end, visitednodes, alreadyvisited, first_not_marked;
 
      contains[0]=0;  // contains[k] nombre d'element de la compasate connexe k pour k > 0
      k=1; // nombre de composantes connexes
      start=0;
+     alreadyvisited=0;
      FIFO[0]=0;
      end=0;
      visitednodes=1; // nombre de noeuds atteint par BFS
@@ -28,8 +29,7 @@ void connected(adjlist* g){
      {
          if (end < start && visitednodes < g->n)
          {
-             contains[k]=start-contains[k-1];
-             //printf("%lu %lu k\n",k, contains[k]);
+             contains[k]=start-alreadyvisited;
              k++;
              for (i=first_not_marked; i<g->n;i++)
              {
@@ -42,9 +42,12 @@ void connected(adjlist* g){
              end++;
              FIFO[end]=i;
              marked[i]=1;
+             alreadyvisited=visitednodes;
+             visitednodes++;
              //printf("next %lu\n",i);
              //if (k==100) break;
          }
+         
          u=FIFO[start];
          start++;
          for (i=0 ; i<g->cd[u+1]-g->cd[u] ;i++ )
@@ -60,7 +63,7 @@ void connected(adjlist* g){
          }
          if (visitednodes == g->n)
          {
-             contains[k]=g->n-contains[k-1];
+             contains[k]=g->n-alreadyvisited;
          }
      }
 
@@ -165,7 +168,7 @@ unsigned long diameter(adjlist* g, int tmax){
     free (marked);
     free(depth);
 
-    printf("Longest shortest path found is between nodes %lu and %lu\n (after being renamed)", best_source, best_destination);
+    printf("Longest shortest path found is between nodes %lu and %lu (after being renamed)\n", best_source, best_destination);
     return(diameter);
 }
 
@@ -250,6 +253,7 @@ int main(int argc,char** argv){
 
   duplicates(g);
 
+
 	printf("Number of nodes: %lu\n",g->n);
 	printf("Number of edges: %lu\n",g->e);
 
@@ -273,7 +277,7 @@ int main(int argc,char** argv){
   int tmax = atoi(argv[3]);
   unsigned long d = diameter(g , tmax);
 
-  printf("Lower bound for graph diameter: %lu\n", d );
+  printf("Lower bound for graph diameter: %lu (edges)\n", d );
 
   t4=time(NULL);
 
