@@ -24,4 +24,5 @@ The graphs on which our algorithms were tested are the following:
 - http://snap.stanford.edu/data/email-Eu-core.html ;
 - http://snap.stanford.edu/data/com-LiveJournal.html ;
 - http://snap.stanford.edu/data/com-Orkut.html ;
-- http://cfinder.org/wiki/?n=Main.Data#toc1 (```dirLinks.zip``` and ```pageNum2Name.zip```).
+- http://cfinder.org/wiki/?n=Main.Data#toc1 (```dirLinks.zip``` and ```pageNum2Name.zip```) ;
+- https://drive.google.com/file/d/0B6cGK503Ibt0dXA3Z2lJcHlLX28/view.
