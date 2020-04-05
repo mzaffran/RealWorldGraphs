@@ -35,4 +35,39 @@ plt.show()
 
 maxID = df[df.Coreness==df.Coreness.max()].ID.values
 len(maxID)
+maxID
+#Sa-kwang Song
+#Sung-Pil Choi
+#Chang-Hoo Jeong
+#Yun-soo Choi
+#Hong-Woo Chun
+#Jinhyung Kim
+#Hanmin Jung
+#Do-Heon Jeong
+#Myunggwon Hwang
+#Won-Kyung Sung
+#Hwamook Yoon
+#Minho Lee
+#Won-Goo Lee
+#Jung Ho Um
+#Dongmin Seo
+#Mi-Nyeong Hwang
+#Sung J. Jung
+#Minhee Cho
+#Sungho Shin
+#Seungwoo Lee
+#Heekwan Koo
+#Jinhee Lee
+#Taehong Kim
+#Mikyoung Lee
+#Ha-neul Yeom
+#Seungkyun Hong
+#Yun-ji Jang
+
+df[(df.Coreness==6) & (df.Degree==df[df.Coreness==6].Degree.max())]
+
+df[(df.Coreness==8) & (df.Degree==df[df.Coreness==8].Degree.max())]
+
+df[(df.Coreness==9) & (df.Degree==df[df.Coreness==9].Degree.max())]
+
 # listID = pd.read_csv('ID.txt', delimiter=' ')
