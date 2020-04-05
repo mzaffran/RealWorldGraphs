@@ -16,7 +16,8 @@ For simplicity, we will assume in the following that your graph is stored in ```
 ```# Undirected graph: ../jouet.txt
 # Jouet
 # Nodes: 9 Edges: 13
-# FromNodeId	ToNodeId```
+# FromNodeId	ToNodeId
+```
 
 For every script listed below, all the results, as well as the execution times, will be printed out in the terminal.
 
