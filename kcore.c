@@ -1,8 +1,8 @@
 #include "adjarray.c"
 
-int kcore(adjlist* g, unsigned long *degree, unsigned long *coreness);
+int kcore(adjlist* g, unsigned long *degree, unsigned long *coreness, unsigned long *degree_fixed);
 
-void saveKCore(char* input_name, adjlist* g, unsigned long *degree, unsigned long *coreness) ;
+void saveKCore(char* input_name, adjlist* g, unsigned long *degree_fixed, unsigned long *coreness) ;
 
 int main(int argc,char** argv){
 
@@ -40,12 +40,13 @@ int main(int argc,char** argv){
 	printf("=== Graph preparation time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60));
 
   unsigned long *degree = calloc(g->n,sizeof(unsigned long)) ;
+  unsigned long *degree_fixed = calloc(g->n,sizeof(unsigned long)) ;
   unsigned long *coreness = calloc(g->n,sizeof(unsigned long)) ;
 
   if (degree==NULL || coreness==NULL){
      printf("Memory failed at degree or corennes")         ;
   }
-  int c = kcore(g, degree, coreness);
+  int c = kcore(g, degree, coreness, degree_fixed);
 
   t3=time(NULL);
 	printf("=== K-Core time = %ldh%ldm%lds\n",(t3-t2)/3600,((t3-t2)%3600)/60,((t3-t2)%60));
@@ -55,7 +56,7 @@ int main(int argc,char** argv){
 
   printf("=== Saving the results. ");
 
-  saveKCore(argv[1], g, degree, coreness) ;
+  saveKCore(argv[1], g, degree_fixed, coreness) ;
 
   t4=time(NULL);
 	printf("Saving time = %ldh%ldm%lds\n",(t4-t3)/3600,((t4-t3)%3600)/60,((t4-t3)%60));
@@ -68,13 +69,14 @@ int main(int argc,char** argv){
   return c ;
 }
 
-int kcore(adjlist* g, unsigned long *degree, unsigned long *coreness){
+int kcore(adjlist* g, unsigned long *degree, unsigned long *coreness, unsigned long *degree_fixed){
   // Création d'une liste contenant les degrés de chaque noeud
   int i;
   int max_degree = 0 ;
   unsigned long *degree_nb = calloc(g->e,sizeof(unsigned long)) ;
   for (i=0; i<g->n; i++) {
     degree[i] = g->cd[i+1]-g->cd[i];
+    degree_fixed[i] = g->cd[i+1]-g->cd[i];
     degree_nb[degree[i]]++ ;
     if (degree[i] > max_degree)
       {
