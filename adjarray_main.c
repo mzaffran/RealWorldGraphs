@@ -43,7 +43,6 @@ int main(int argc,char** argv){
 	t2=time(NULL);
 
 	printf("=== Overall time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60));
-
 	free_adjlist(g);
 	return 0;
 }

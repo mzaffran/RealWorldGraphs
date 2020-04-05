@@ -47,7 +47,7 @@ void connected(adjlist* g){
              //printf("next %lu\n",i);
              //if (k==100) break;
          }
-         
+
          u=FIFO[start];
          start++;
          for (i=0 ; i<g->cd[u+1]-g->cd[u] ;i++ )
@@ -73,7 +73,7 @@ void connected(adjlist* g){
      printf("Nombre de composantes connexes : %lu\n",k);
      for (i=1;i<k+1;i++)
      {
-         printf("Nombre d'éléments de la composante %lu : %lu\n",i,contains[i]);
+         printf("Nombre d'Ã©lÃ©ments de la composante %lu : %lu\n",i,contains[i]);
      }
      //contains = realloc((k+1)*sizeof(unsigned long));
      free(contains);
@@ -107,7 +107,7 @@ unsigned long diameter(adjlist* g, int tmax){
      int stagnate=0;
      while (time(NULL) -t1 <=tmax)
      {
-          
+
          stagnate=0;
          while (stagnate <5)
          {
@@ -134,16 +134,16 @@ unsigned long diameter(adjlist* g, int tmax){
                 best_source=FIFO[0];
                 best_destination= last_marked;
                 diameter = depth[last_marked];
-                
+
              }
              else
              {
                   stagnate++;
              }
-             
+
              // repartir du dernier noeuds trouve
              for (i=0;i<g->n;i++){
-            
+
                 if (marked[i]>0){
                    marked[i]=0;
                    depth[i]=0;
@@ -269,7 +269,7 @@ int main(int argc,char** argv){
   printf("Start counting connected parts\n");
   connected(g);
   t3=time(NULL);
-  
+
 
   printf("=== Counting time = %ldh%ldm%lds\n",(t3-t2)/3600,((t3-t2)%3600)/60,((t3-t2)%60));
 

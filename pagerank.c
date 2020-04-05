@@ -139,11 +139,9 @@ int main(int argc,char** argv){
   }
   t2=time(NULL);
 
-
   char* alpha_value = argv[3] ;
   double alpha ;
   alpha = strtod(alpha_value, NULL);
-
 
   char** pagenames = readpagelist(argv[2], g->n);
 

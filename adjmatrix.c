@@ -43,7 +43,7 @@ typedef struct {
 	bool *mat;//adjacency matrix
 } adjmatrix;
 
-adjmatrix* oldreadedgelist(char* input){
+adjmatrix* readedgelist(char* input){
 	unsigned long e1=NLINKS;
 
 	FILE *file=fopen(input, "r");
@@ -88,7 +88,7 @@ adjmatrix* oldreadedgelist(char* input){
 }
 
 //reading the edgelist from file
-adjmatrix* readedgelist(char* input){
+adjmatrix* specificreadedgelist(char* input){
 	unsigned long e1=NLINKS;
 	FILE *file=fopen(input,"r");
 
@@ -126,7 +126,7 @@ void mkmatrix(adjmatrix* g){
 		v=g->edges[i].t;
 		//printf("%lu %lu\n", u+g->n*v,v+g->n*u );
 		g->mat[u+g->n*v]=1;
-		printf("1\n");
+		//printf("1\n");
 		g->mat[v+g->n*u]=1;
 	}
 }
@@ -145,7 +145,13 @@ int main(int argc,char** argv){
 	t1=time(NULL);
 
 	printf("Reading edgelist from file %s\n",argv[1]);
-	g=oldreadedgelist(argv[1]);
+	int header = atoi(argv[2]);
+  if (header){
+    g=readedgelist(argv[1]);
+  }
+  else{
+    g=specificreadedgelist(argv[1]);
+  }
 
 	printf("Number of nodes: %lu\n",g->n);
 	printf("Number of edges: %lu\n",g->e);
@@ -157,7 +163,7 @@ int main(int argc,char** argv){
 
 	printf("=== Overall time = %ldh%ldm%lds\n",(t2-t1)/3600,((t2-t1)%3600)/60,((t2-t1)%60));
 
-	sleep(20);
+	sleep(10);
 	free_adjmatrix(g);
 
 	return 0;
